@@ -1,13 +1,15 @@
 package fr.socolin.rider.plugins.hsf.settings.ui
 
 import com.intellij.openapi.project.Project
+import com.intellij.ui.dsl.builder.panel
 import com.jetbrains.rd.util.lifetime.Lifetime
-import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRuleConfiguration
+import fr.socolin.rider.plugins.hsf.models.HsfRuleConfiguration
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
+import java.awt.GridLayout
 import javax.swing.JPanel
 
-class ProjectSettingsComponent(
+class HsfSettingsComponent(
     project: Project,
     lifetime: Lifetime
 ) {
@@ -30,11 +32,11 @@ class ProjectSettingsComponent(
         return panel
     }
 
-    fun setRules(rules: List<HsfHighlightingRuleConfiguration>) {
+    fun setRules(rules: Collection<HsfRuleConfiguration>) {
         rulesComponent.setRules(rules)
     }
 
-    fun getRules(): List<HsfHighlightingRuleConfiguration> {
+    fun getRules(): List<HsfRuleConfiguration> {
         return rulesComponent.getRules()
     }
 }

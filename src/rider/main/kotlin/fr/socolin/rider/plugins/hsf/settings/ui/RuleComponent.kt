@@ -1,185 +1,161 @@
 package fr.socolin.rider.plugins.hsf.settings.ui
 
-import com.intellij.icons.AllIcons
-import com.intellij.openapi.ui.ComboBox
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.ColorPanel
 import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBTextField
-import com.intellij.ui.components.fields.IntegerField
+import com.intellij.ui.dsl.builder.*
 import com.jetbrains.rd.util.reactive.Signal
 import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
-import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRuleConfiguration
-import fr.socolin.rider.plugins.hsf.models.HsfIcon
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
-import java.awt.*
-import java.util.*
-import javax.swing.*
+import fr.socolin.rider.plugins.hsf.models.HsfRuleConfiguration
+import fr.socolin.rider.plugins.hsf.settings.ui.renderers.ComboCellStyleRender
+import fr.socolin.rider.plugins.hsf.settings.ui.renderers.ComboCellWithIconRender
+import icons.CollaborationToolsIcons
+import java.awt.Color
+import java.awt.GridLayout
+import javax.swing.JPanel
 
 class RuleComponent(
-    private val rule: HsfHighlightingRuleConfiguration,
+    ruleConfiguration: HsfRuleConfiguration,
     hsfIconManager: HsfIconManager
-) : JPanel(GridBagLayout()) {
-    private val iconComboBox = ComboBox<HsfIcon>()
-    private val priorityField = IntegerField()
+) : JPanel(GridLayout()) {
+    val onDelete = Signal<HsfRuleConfiguration>()
+    private val panel: DialogPanel
 
-    // FIXME: See IgnoredFilesAndFoldersPanel.PatternEditField to add some validation
-    private val patternTextField = JBTextField()
-    private val annotationTextField = JBTextField()
-    private val annotationStyleComboBox = ComboBox<String>()
-    private val useForegroundColor = JBCheckBox()
-    private val foregroundColorPanel = ColorPanel()
-
-    val onDelete = Signal<RuleComponent>()
+    internal val ruleModel = RuleModel(ruleConfiguration)
 
     init {
-        addTitle()
+        val action = object : DumbAwareAction("Delete Rule", "Delete this rule", CollaborationToolsIcons.Delete) {
+            override fun actionPerformed(e: AnActionEvent) {
+                onDelete.fire(ruleConfiguration)
+            }
+        }
+        panel = panel {
+            collapsibleGroup("Rule: " + ruleModel.pattern) {
+                group("Metadata") {
+                    row {
+                        intTextField()
+                            .label("Order")
+                            .bindIntText(ruleModel::order)
+                            .resizableColumn()
+                            .comment(
+                                "When multiple rules match a same file, the one with the larger value is applied the latest",
+                                50
+                            )
+                        label("")
+                            .resizableColumn()
+                        checkBox("Shared")
+                            .bindSelected(ruleModel::isShared)
+                            .comment(
+                                "Define where this rule is saved. When shared a rule is saved in .project.xml otherwise it's in .user.xml",
+                                60
+                            )
+                            .resizableColumn()
+                        actionButton(action)
+                    }
+                }
+                group("Match") {
+                    row("Pattern") {
+                        textField()
+                            .bindText(ruleModel::pattern)
+                            .comment("A regex used to match on the filename (does not include the path)")
+                    }
+                }
+                group("Effects") {
+                    row("Icon") {
+                        comboBox(hsfIconManager.getVectorIcons(), ComboCellWithIconRender())
+                            .bindItem(
+                                { hsfIconManager.getIcon(ruleModel.iconId) },
+                                { v -> ruleModel.iconId = v?.id ?: HsfIconManager.None.id })
+                    }
+                    lateinit var usePriorityCheckbox: Cell<JBCheckBox>
+                    row("Priority") {
+                        usePriorityCheckbox = checkBox("Change order")
+                            .bindSelected(ruleModel::usePriority)
+                        intTextField()
+                            .bindIntText(ruleModel::priority)
+                            .comment(
+                                "A file with highest value will be sorted first.<br>File default: 0, Folder default: 1000",
+                                300
+                            )
+                            .visibleIf(usePriorityCheckbox.selected)
+                    }
+                    lateinit var useAnnotationCheckbox: Cell<JBCheckBox>
+                    row("Annotation") {
+                        useAnnotationCheckbox = checkBox("Add annotation")
+                            .bindSelected(ruleModel::useAnnotation)
+                        textField()
+                            .bindText(ruleModel::annotationText)
+                            .visibleIf(useAnnotationCheckbox.selected)
+                        comboBox(HsfAnnotationTextStyles.sortedStyles, ComboCellStyleRender())
+                            .bindItemNullable(ruleModel::annotationStyle)
+                            .visibleIf(useAnnotationCheckbox.selected)
+                    }
+                    lateinit var useForegroundCheckbox: Cell<JBCheckBox>
+                    row("Foreground") {
+                        useForegroundCheckbox = checkBox("Change text color")
+                            .bindSelected(ruleModel::useForegroundColor)
 
-        val secondLineConstraint = GridBagConstraints()
-        secondLineConstraint.gridx = 0
-        secondLineConstraint.gridy = 1
-        secondLineConstraint.fill = GridBagConstraints.HORIZONTAL
-        secondLineConstraint.gridwidth = 1
-        secondLineConstraint.gridheight = 1
-        secondLineConstraint.anchor = GridBagConstraints.PAGE_START
-
-        add(
-            createLine(createIconSelector(hsfIconManager), createPriorityField(), createAnnotationTextField()),
-            secondLineConstraint
-        )
-
-        val thirdLineConstraint = GridBagConstraints()
-        thirdLineConstraint.gridx = 0
-        thirdLineConstraint.gridy = 2
-        thirdLineConstraint.fill = GridBagConstraints.HORIZONTAL
-        thirdLineConstraint.gridwidth = 1
-        thirdLineConstraint.gridheight = 1
-        thirdLineConstraint.anchor = GridBagConstraints.PAGE_START
-
-        add(
-            createLine(createForegroundField()),
-            thirdLineConstraint
-        )
-
-        val deleteButtonConstraint = GridBagConstraints()
-        deleteButtonConstraint.gridx = 1
-
-        val deleteButton = JButton(AllIcons.General.Remove)
-        deleteButton.preferredSize = Dimension(30, 30)
-        deleteButton.addActionListener { _ -> onDelete.fire(this) }
-
-        add(deleteButton, deleteButtonConstraint)
-    }
-
-    private fun addTitle() {
-        val patternConstraint = GridBagConstraints()
-        patternConstraint.gridx = 0
-        patternConstraint.gridwidth = 1
-        patternConstraint.gridheight = 1
-        patternConstraint.anchor = GridBagConstraints.FIRST_LINE_START
-        patternConstraint.weightx = 1.0
-        patternConstraint.fill = GridBagConstraints.HORIZONTAL
-
-        patternTextField.preferredSize = Dimension(300, 30)
-        patternTextField.text = rule.pattern
-        val patternPanel = JPanel(FlowLayout(FlowLayout.LEFT))
-        patternPanel.add(JLabel("Pattern: "))
-        patternPanel.add(patternTextField)
-
-        add(patternPanel, patternConstraint)
-    }
-
-    private fun createIconSelector(hsfIconManager: HsfIconManager): JComponent {
-        val icons = hsfIconManager.getIcons()
-        val iconsArray = Array(icons.size) { i -> icons[i] }
-        iconComboBox.model = DefaultComboBoxModel(iconsArray)
-        iconComboBox.renderer = ComboCellWithIconRender()
-        iconComboBox.selectedItem = hsfIconManager.getIcon(rule.iconId)
-
-        val iconPanel = JPanel(FlowLayout(FlowLayout.LEFT))
-        iconPanel.add(JLabel("Icon: "))
-        iconPanel.add(iconComboBox)
-
-        return iconPanel
-    }
-
-    private fun createPriorityField(): JComponent {
-        priorityField.preferredSize = Dimension(50, priorityField.preferredSize.height)
-        if (rule.priority != null)
-            priorityField.text = rule.priority.toString()
-
-        val priorityIcon = JPanel(FlowLayout(FlowLayout.LEFT))
-        priorityIcon.add(JLabel("Priority:"))
-        priorityIcon.add(priorityField)
-
-        return priorityIcon
-    }
-    private fun createForegroundField(): JComponent {
-
-        if (rule.foregroundColorHex != null) {
-            useForegroundColor.isSelected = true
-            foregroundColorPanel.selectedColor = Color.decode(rule.foregroundColorHex)
+                        cell(ColorPanel())
+                            .bind(
+                                { comp -> convertColorToHex(comp.selectedColor) },
+                                { comp, color ->
+                                    comp.selectedColor = if (color == null) null else Color.decode(color)
+                                },
+                                MutableProperty(
+                                    { ruleModel.foregroundColorHex },
+                                    { ruleModel.foregroundColorHex = it }
+                                )
+                            )
+                            .visibleIf(useForegroundCheckbox.selected)
+                    }
+                }
+            }
         }
 
-        val priorityIcon = JPanel(FlowLayout(FlowLayout.LEFT))
-        priorityIcon.add(JLabel("Foreground:"))
-        priorityIcon.add(useForegroundColor)
-        priorityIcon.add(foregroundColorPanel)
-
-        return priorityIcon
+        add(panel)
     }
 
-    private fun createAnnotationTextField(): JComponent {
-        annotationTextField.text = rule.annotationText
-        annotationTextField.preferredSize = Dimension(150, priorityField.preferredSize.height)
-
-        val v = Vector(HsfAnnotationTextStyles.annotationsStyles.keys)
-        v.sort()
-        annotationStyleComboBox.model = DefaultComboBoxModel(v)
-        annotationStyleComboBox.renderer = ComboCellStyleRender()
-        annotationStyleComboBox.selectedItem = rule.annotationStyle
-
-        val annotationPanel = JPanel(FlowLayout(FlowLayout.LEFT))
-        annotationPanel.add(JLabel("Annotation:"))
-        annotationPanel.add(annotationTextField)
-        annotationPanel.add(annotationStyleComboBox)
-
-        return annotationPanel
-    }
-
-    private fun createLine(vararg components: JComponent): JPanel {
-        val linePanel = JPanel(FlowLayout(FlowLayout.LEFT))
-        for (component in components) {
-            linePanel.add(component)
-        }
-        return linePanel
-    }
-
-    fun getRule(): HsfHighlightingRuleConfiguration {
-        var priority: Int? = null
-        if (priorityField.text != null && priorityField.text != "")
-            priority = priorityField.value
-
-        var annotationText = annotationTextField.text
-        if (annotationText == "") {
-            annotationText = null
-        }
-
-        return HsfHighlightingRuleConfiguration(
-            rule.id,
-            patternTextField.text,
-            (iconComboBox.selectedItem as HsfIcon).id,
-            priority,
-            annotationText,
-            annotationStyleComboBox.selectedItem as String,
-            getForegroundColor()
+    fun getRule(): HsfRuleConfiguration {
+        panel.apply()
+        return HsfRuleConfiguration(
+            ruleModel.id,
+            ruleModel.pattern,
+            ruleModel.order,
+            ruleModel.iconId,
+            if (ruleModel.usePriority) ruleModel.priority else null,
+            if (ruleModel.useAnnotation) ruleModel.annotationText else null,
+            ruleModel.annotationStyle,
+            if (ruleModel.useForegroundColor) ruleModel.foregroundColorHex else null,
+            ruleModel.isShared
         )
     }
 
-    private fun getForegroundColor(): String? {
-        if (!useForegroundColor.isSelected)
-            return null
-        val color = foregroundColorPanel.selectedColor ?: return null
-        return "#${color.red.toString(16)}${color.green.toString(16)}${color.blue.toString(16)}"
+    companion object {
+        private fun convertColorToHex(c: Color?): String? {
+            if (c == null)
+                return null
+            return "#${c.red.toString(16)}${c.green.toString(16)}${c.blue.toString(16)}"
+        }
     }
+}
 
+internal class RuleModel(ruleConfiguration: HsfRuleConfiguration) {
+    var id = ruleConfiguration.id
+    var pattern = ruleConfiguration.pattern
+    var isShared = ruleConfiguration.isShared
+    var order = ruleConfiguration.order
+    var iconId = ruleConfiguration.iconId
+
+    var usePriority: Boolean = ruleConfiguration.priority != null
+    var priority = ruleConfiguration.priority ?: 0
+
+    var useAnnotation: Boolean = ruleConfiguration.annotationText != null
+    var annotationText = ruleConfiguration.annotationText ?: ""
+    var annotationStyle: String? = ruleConfiguration.annotationStyle ?: HsfAnnotationTextStyles.defaultId
+
+    var useForegroundColor = ruleConfiguration.foregroundColorHex != null
+    var foregroundColorHex = ruleConfiguration.foregroundColorHex
 }

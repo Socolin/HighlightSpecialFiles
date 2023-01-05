@@ -14,37 +14,38 @@ import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import com.jetbrains.rider.projectView.workspace.getFile
 import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
 import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
-import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRuleConfiguration
+import fr.socolin.rider.plugins.hsf.models.HsfRuleConfiguration
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
-import fr.socolin.rider.plugins.hsf.settings.ProjectSettingsStorageService
+import fr.socolin.rider.plugins.hsf.settings.HsfConfigurationManager
 import java.awt.Color
 import java.util.regex.Pattern
 
 class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCustomization(project) {
-    private val projectSettings: ProjectSettingsStorageService = ProjectSettingsStorageService.getInstance(project)
+    private val rulesConfigurationManager: HsfConfigurationManager =
+        HsfConfigurationManager.getInstance(project)
     private val hsfIconManager: HsfIconManager = HsfIconManager.getInstance(project)
 
     private val activeRules: ArrayList<HsfHighlightingRule> = ArrayList()
     private val activeRulesWithPriority: ArrayList<HsfHighlightingRule> = ArrayList()
 
     init {
-        for (rule in projectSettings.state.rulesManager.rules) {
+        for (rule in rulesConfigurationManager.getOrderedRules()) {
             addRule(rule)
         }
 
-        projectSettings.state.rulesManager.ruleAdded.advise(project.lifetime) { r ->
+        rulesConfigurationManager.ruleAdded.advise(project.lifetime) { r ->
             run {
                 addRule(r)
                 ProjectModelViewUpdater.fireUpdate(project) { u -> u.updateAll() }
             }
         }
-        projectSettings.state.rulesManager.ruleChanged.advise(project.lifetime) { r ->
+        rulesConfigurationManager.ruleChanged.advise(project.lifetime) { r ->
             run {
                 updateRule(r.first, r.second)
                 ProjectModelViewUpdater.fireUpdate(project) { u -> u.updateAll() }
             }
         }
-        projectSettings.state.rulesManager.ruleDeleted.advise(project.lifetime) { r ->
+        rulesConfigurationManager.ruleDeleted.advise(project.lifetime) { r ->
             run {
                 removeRule(r)
                 ProjectModelViewUpdater.fireUpdate(project) { u -> u.updateAll() }
@@ -52,7 +53,7 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         }
     }
 
-    private fun updateRule(previousRule: HsfHighlightingRuleConfiguration, newRule: HsfHighlightingRuleConfiguration) {
+    private fun updateRule(previousRule: HsfRuleConfiguration, newRule: HsfRuleConfiguration) {
         val activeRule = createRuleFromConfig(newRule)
         for ((index, rule) in activeRules.withIndex()) {
             if (rule.id == previousRule.id) {
@@ -76,7 +77,7 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         }
     }
 
-    private fun removeRule(deletedRule: HsfHighlightingRuleConfiguration) {
+    private fun removeRule(deletedRule: HsfRuleConfiguration) {
         for ((index, rule) in activeRules.withIndex()) {
             if (rule.id == deletedRule.id) {
                 activeRules.removeAt(index)
@@ -94,7 +95,7 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         }
     }
 
-    private fun addRule(ruleConfig: HsfHighlightingRuleConfiguration) {
+    private fun addRule(ruleConfig: HsfRuleConfiguration) {
         val activeRule = createRuleFromConfig(ruleConfig)
         activeRules.add(activeRule)
         if (activeRule.priority != null)
@@ -102,7 +103,7 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
     }
 
     private fun createRuleFromConfig(
-        ruleConfig: HsfHighlightingRuleConfiguration,
+        ruleConfig: HsfRuleConfiguration,
     ) = HsfHighlightingRule(
         ruleConfig.id,
         Pattern.compile(ruleConfig.pattern),

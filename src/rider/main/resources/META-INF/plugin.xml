@@ -10,12 +10,14 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Project Model -->
-        <projectService serviceImplementation="fr.socolin.rider.plugins.hsf.settings.ProjectSettingsStorageService"/>
+        <projectService serviceImplementation="fr.socolin.rider.plugins.hsf.settings.HsfConfigurationManager"/>
+        <projectService serviceImplementation="fr.socolin.rider.plugins.hsf.settings.storage.HsfProjectSettingsStorageService"/>
+        <projectService serviceImplementation="fr.socolin.rider.plugins.hsf.settings.storage.HsfUserSettingsStorageService"/>
         <projectService serviceImplementation="fr.socolin.rider.plugins.hsf.models.HsfIconManager"/>
         <solutionExplorerCustomization implementation="fr.socolin.rider.plugins.hsf.HsfSolutionExplorerCustomization"/>
         <projectConfigurable
                 parentId="appearance"
-                instance="fr.socolin.rider.plugins.hsf.settings.ProjectSettingsConfigurable"
+                instance="fr.socolin.rider.plugins.hsf.settings.HsfSettingsConfigurable"
                 id="fr.socolin.rider.plugins.ProjectSettingsConfigurable"
                 displayName="Highlight Special Files"
                 nonDefaultProject="true"/>

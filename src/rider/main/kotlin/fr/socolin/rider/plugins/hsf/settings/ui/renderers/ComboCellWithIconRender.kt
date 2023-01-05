@@ -1,4 +1,4 @@
-package fr.socolin.rider.plugins.hsf.settings.ui
+package fr.socolin.rider.plugins.hsf.settings.ui.renderers
 
 import fr.socolin.rider.plugins.hsf.models.HsfIcon
 import java.awt.Component

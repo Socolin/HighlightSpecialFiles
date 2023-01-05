@@ -2,6 +2,9 @@ package fr.socolin.rider.plugins.hsf.models
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class HsfIconManager {
     private val icons: ArrayList<HsfIcon> = ArrayList()
@@ -41,6 +44,10 @@ class HsfIconManager {
 
     fun getIcons(): List<HsfIcon> {
         return icons
+    }
+
+    fun getVectorIcons(): Vector<HsfIcon> {
+        return Vector(icons) // FIXME: Cache this ? instead of a new each time ?
     }
 
     companion object {

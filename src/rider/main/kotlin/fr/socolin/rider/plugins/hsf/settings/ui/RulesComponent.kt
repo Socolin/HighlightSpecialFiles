@@ -2,14 +2,16 @@ package fr.socolin.rider.plugins.hsf.settings.ui
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.DialogPanel
+import com.intellij.openapi.util.Disposer
+import com.intellij.ui.dsl.builder.panel
+import com.jetbrains.rd.ui.bedsl.button
 import com.jetbrains.rd.util.lifetime.Lifetime
-import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRuleConfiguration
+import fr.socolin.rider.plugins.hsf.models.HsfRuleConfiguration
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
-import java.awt.Dimension
-import java.awt.FlowLayout
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
+import java.awt.*
 import java.util.*
+import javax.swing.BoxLayout
 import javax.swing.JButton
 import javax.swing.JPanel
 
@@ -42,16 +44,16 @@ class RulesComponent(
 
         val addButton = JButton(AllIcons.General.Add)
         addButton.preferredSize = Dimension(30, 30)
-        addButton.addActionListener { _ -> addScopeConfig() }
+        addButton.addActionListener { _ -> addNewRule() }
         panel.add(addButton)
         return panel
     }
 
-    private fun addScopeConfig() {
-        addRule(HsfHighlightingRuleConfiguration(UUID.randomUUID(), "^$"))
+    private fun addNewRule() {
+        addRule(HsfRuleConfiguration(UUID.randomUUID(), "^$", 0))
     }
 
-    fun setRules(rules: List<HsfHighlightingRuleConfiguration>) {
+    fun setRules(rules: Collection<HsfRuleConfiguration>) {
         this.rulesPanel.removeAll()
         this.ruleComponents.clear()
         for (rule in rules) {
@@ -59,15 +61,15 @@ class RulesComponent(
         }
     }
 
-    fun getRules(): List<HsfHighlightingRuleConfiguration> {
-        val actualRules = ArrayList<HsfHighlightingRuleConfiguration>()
+    fun getRules(): List<HsfRuleConfiguration> {
+        val actualRules = ArrayList<HsfRuleConfiguration>()
         for (ruleComponent in ruleComponents) {
             actualRules.add(ruleComponent.getRule())
         }
         return actualRules
     }
 
-    private fun addRule(rule: HsfHighlightingRuleConfiguration) {
+    private fun addRule(rule: HsfRuleConfiguration) {
         val ruleConstraint = GridBagConstraints()
         ruleConstraint.gridy = this.ruleComponents.size
         ruleConstraint.anchor = GridBagConstraints.FIRST_LINE_START
@@ -78,8 +80,9 @@ class RulesComponent(
         this.rulesPanel.add(ruleComponent, ruleConstraint)
         ruleComponents.add(ruleComponent)
 
-        ruleComponent.onDelete.advise(lifetime) {rc ->
+        ruleComponent.onDelete.advise(lifetime) { deletedRule ->
             run {
+                val rc = this.rulesPanel.components.find { c -> (c as RuleComponent).ruleModel.id == deletedRule.id }
                 this.rulesPanel.remove(rc)
                 ruleComponents.remove(rc)
                 revalidate()
