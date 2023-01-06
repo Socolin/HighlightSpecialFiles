@@ -1,24 +1,43 @@
 package fr.socolin.rider.plugins.hsf.settings.ui
 
+import com.intellij.ide.actions.RevealFileAction
 import com.intellij.openapi.project.Project
 import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.panel
+import com.intellij.util.io.exists
+import com.intellij.util.io.systemIndependentPath
 import com.jetbrains.rd.util.lifetime.Lifetime
+import fr.socolin.rider.plugins.hsf.models.HsfIconManager
 import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import javax.swing.JPanel
+import kotlin.io.path.createDirectory
 
 class HsfSettingsComponent(
-    project: Project,
+    private val project: Project,
     lifetime: Lifetime
 ) {
-    private val rulesComponent: RulesComponent
-
-    init {
-        rulesComponent = RulesComponent(project, lifetime)
-    }
+    private val rulesComponent = RulesComponent(project, lifetime)
+    private val hsfIconManager = HsfIconManager.getInstance(project)
 
     fun getPanel(): JPanel {
         return panel {
+            group("Icons") {
+                row {
+                    text("You can provide additional icons by adding them in on of the following folders").resizableColumn()
+                    button("Reload Icons") { hsfIconManager.reloadIcons() }
+                }
+                group("Icon Folders") {
+                    for (iconFolder in HsfIconManager.listIconsFolders(project, shouldExists = false)) {
+                        row {
+                            link(iconFolder.systemIndependentPath) {
+                                if (!iconFolder.exists())
+                                    iconFolder.createDirectory()
+                                RevealFileAction.openDirectory(iconFolder)
+                            }
+                        }
+                    }
+                }
+            }
             row {
                 cell(rulesComponent.panel).align(AlignX.FILL)
             }

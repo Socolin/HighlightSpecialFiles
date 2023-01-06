@@ -2,6 +2,7 @@ package fr.socolin.rider.plugins.hsf.settings.ui
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.ColorPanel
 import com.intellij.ui.TitledSeparator
@@ -9,9 +10,10 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.*
-import com.intellij.ui.dsl.builder.impl.CollapsibleTitledSeparatorImpl
+import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rd.util.reactive.Signal
 import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
+import fr.socolin.rider.plugins.hsf.models.HsfIcon
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
 import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import fr.socolin.rider.plugins.hsf.settings.ui.renderers.ComboCellStyleRender
@@ -20,12 +22,15 @@ import icons.CollaborationToolsIcons
 import java.awt.Color
 import java.awt.Container
 import java.awt.GridLayout
+import java.util.*
+import javax.swing.DefaultComboBoxModel
 import javax.swing.JComponent
 import javax.swing.JPanel
 
 class RuleComponent(
     ruleConfiguration: HsfRuleConfiguration,
-    hsfIconManager: HsfIconManager
+    hsfIconManager: HsfIconManager,
+    lifetime: Lifetime,
 ) : JPanel(GridLayout()) {
     val onDelete = Signal<HsfRuleConfiguration>()
     val ruleId = ruleConfiguration.id
@@ -68,6 +73,7 @@ class RuleComponent(
                 }
                 group("Match") {
                     row("Pattern") {
+                        @Suppress("UnstableApiUsage")
                         patternTextField = textField()
                             .bindText(ruleModel::pattern)
                             .whenTextChangedFromUi { pattern ->
@@ -78,10 +84,14 @@ class RuleComponent(
                 }
                 group("Effects") {
                     row("Icon") {
-                        comboBox(hsfIconManager.getVectorIcons(), ComboCellWithIconRender())
+                        val iconComboBox: Cell<ComboBox<HsfIcon>> =
+                            comboBox(hsfIconManager.icons, ComboCellWithIconRender())
                             .bindItem(
                                 { hsfIconManager.getIcon(ruleModel.iconId) },
                                 { v -> ruleModel.iconId = v?.id ?: HsfIconManager.None.id })
+                        hsfIconManager.onReload.advise(lifetime) { icons ->
+                            iconComboBox.component.model = DefaultComboBoxModel(Vector(icons))
+                        }
                     }
                     lateinit var usePriorityCheckbox: Cell<JBCheckBox>
                     row("Priority") {
@@ -160,28 +170,28 @@ class RuleComponent(
         }
 
         private fun updateLabelWithPattern(component: JComponent, pattern: String) {
-            val label = findRuleLabelInParentOf(component);
+            val label = findRuleLabelInParentOf(component)
             if (label != null)
                 label.text = "Rule: $pattern"
         }
 
         private fun findRuleLabelInParentOf(container: Container?): JBLabel? {
             if (container == null)
-                return null;
+                return null
 
             if (container is DialogPanel) {
                 for (component in container.components) {
                     if (component is TitledSeparator) {
                         for (child in component.components) {
                             if (child is JBLabel && child.text.startsWith("Rule: "))
-                                return child;
+                                return child
                         }
                     }
                 }
 
             }
 
-            return findRuleLabelInParentOf(container.parent);
+            return findRuleLabelInParentOf(container.parent)
         }
     }
 }

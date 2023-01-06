@@ -65,7 +65,7 @@ class RulesComponent(
     }
 
     private fun addRule(rule: HsfRuleConfiguration) {
-        val ruleComponent = RuleComponent(rule, HsfIconManager.getInstance(project))
+        val ruleComponent = RuleComponent(rule, HsfIconManager.getInstance(project), lifetime)
         this.rulesPanel.add(ruleComponent)
         ruleComponents.add(ruleComponent)
 
