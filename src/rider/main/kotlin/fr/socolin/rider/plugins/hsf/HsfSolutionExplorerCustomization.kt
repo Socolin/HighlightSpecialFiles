@@ -14,7 +14,7 @@ import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import com.jetbrains.rider.projectView.workspace.getFile
 import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
 import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
-import fr.socolin.rider.plugins.hsf.models.HsfRuleConfiguration
+import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
 import fr.socolin.rider.plugins.hsf.settings.HsfConfigurationManager
 import java.awt.Color

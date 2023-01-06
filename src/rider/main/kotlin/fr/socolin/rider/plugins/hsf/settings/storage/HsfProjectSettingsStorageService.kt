@@ -7,8 +7,7 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SimpleModificationTracker
 import com.intellij.util.xmlb.XmlSerializerUtil
-import com.jetbrains.rd.platform.util.lifetime
-import fr.socolin.rider.plugins.hsf.models.HsfRuleConfiguration
+import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 
 // https://plugins.jetbrains.com/docs/intellij/settings-tutorial.html#the-appsettingscomponent-class
 @State(

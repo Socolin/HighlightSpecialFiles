@@ -1,5 +1,6 @@
-package fr.socolin.rider.plugins.hsf.models
+package fr.socolin.rider.plugins.hsf.settings.models
 
+import fr.socolin.rider.plugins.hsf.models.HsfIconManager
 import java.util.UUID
 
 class HsfRuleConfiguration(

@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.containers.SortedList
 import com.jetbrains.rd.util.putUnique
 import com.jetbrains.rd.util.reactive.Signal
-import fr.socolin.rider.plugins.hsf.models.HsfRuleConfiguration
+import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import fr.socolin.rider.plugins.hsf.settings.storage.HsfProjectSettingsStorageService
 import fr.socolin.rider.plugins.hsf.settings.storage.HsfUserSettingsStorageService
 import java.util.*
@@ -29,29 +29,25 @@ class HsfConfigurationManager(project: Project) {
             rulesConfigurationsOrdered.addAll(hsfUserSettingsStorageService.getRulesConfigurations())
             rulesConfigurationsOrdered.addAll(hsfProjectSettingsStorageService.getRulesConfigurations())
             rulesConfigurationsOrdered.forEach { r -> rulesByIds.putUnique(r.id, r) }
-        }
-        catch (e: Exception) {
-            logger.error("An error occurred while loading rules. " +
-                    "Please fix problem and restart the IDE, the rules can be found in .idea/fr.socolin.hsf.project.xml" +
-                    " and fr.socolin.hsf.user.xml", e)
+        } catch (e: Exception) {
+            logger.error(
+                "An error occurred while loading rules. " +
+                        "Please fix problem and restart the IDE, the rules can be found in .idea/fr.socolin.hsf.project.xml" +
+                        " and fr.socolin.hsf.user.xml", e
+            )
         }
     }
 
     fun updateRules(updatedRules: List<HsfRuleConfiguration>) {
-        val ruleToRemove = ArrayList<HsfRuleConfiguration>()
-        for (rule in rulesConfigurationsOrdered) {
-            if (updatedRules.find { r -> r.id == rule.id } == null)
-                ruleToRemove.add(rule)
-        }
-        for (rule in ruleToRemove) {
+        val diffResult = HsfRuleConfigurationHelper.computeDiffBetweenRules(rulesConfigurationsOrdered, updatedRules);
+        for (rule in diffResult.removedRules) {
             removeRule(rule)
         }
-
-        for (rule in updatedRules) {
-            if (rulesByIds.containsKey(rule.id))
-                updateRule(rule)
-            else
-                addRule(rule)
+        for (rule in diffResult.updatedRules) {
+            updateRule(rule)
+        }
+        for (rule in diffResult.addedRules) {
+            updateRule(rule)
         }
     }
 

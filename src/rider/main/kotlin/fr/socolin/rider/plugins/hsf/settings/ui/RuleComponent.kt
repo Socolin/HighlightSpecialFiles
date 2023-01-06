@@ -9,7 +9,7 @@ import com.intellij.ui.dsl.builder.*
 import com.jetbrains.rd.util.reactive.Signal
 import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
-import fr.socolin.rider.plugins.hsf.models.HsfRuleConfiguration
+import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import fr.socolin.rider.plugins.hsf.settings.ui.renderers.ComboCellStyleRender
 import fr.socolin.rider.plugins.hsf.settings.ui.renderers.ComboCellWithIconRender
 import icons.CollaborationToolsIcons
@@ -22,9 +22,12 @@ class RuleComponent(
     hsfIconManager: HsfIconManager
 ) : JPanel(GridLayout()) {
     val onDelete = Signal<HsfRuleConfiguration>()
+    val ruleId = ruleConfiguration.id
     private val panel: DialogPanel
+    private val ruleModel = RuleModel(ruleConfiguration)
 
-    internal val ruleModel = RuleModel(ruleConfiguration)
+    val order: Int
+        get() = ruleModel.order
 
     init {
         val action = object : DumbAwareAction("Delete Rule", "Delete this rule", CollaborationToolsIcons.Delete) {
@@ -121,16 +124,21 @@ class RuleComponent(
     fun getRule(): HsfRuleConfiguration {
         panel.apply()
         return HsfRuleConfiguration(
-            ruleModel.id,
+            ruleId,
             ruleModel.pattern,
             ruleModel.order,
             ruleModel.iconId,
             if (ruleModel.usePriority) ruleModel.priority else null,
             if (ruleModel.useAnnotation) ruleModel.annotationText else null,
-            ruleModel.annotationStyle,
+            if (ruleModel.useAnnotation) ruleModel.annotationStyle else null,
             if (ruleModel.useForegroundColor) ruleModel.foregroundColorHex else null,
             ruleModel.isShared
         )
+    }
+
+    fun setRule(updatedRule: HsfRuleConfiguration) {
+        ruleModel.updateModel(updatedRule)
+        panel.reset()
     }
 
     companion object {
@@ -143,19 +151,40 @@ class RuleComponent(
 }
 
 internal class RuleModel(ruleConfiguration: HsfRuleConfiguration) {
-    var id = ruleConfiguration.id
-    var pattern = ruleConfiguration.pattern
-    var isShared = ruleConfiguration.isShared
-    var order = ruleConfiguration.order
-    var iconId = ruleConfiguration.iconId
+    lateinit var pattern: String
+    var isShared: Boolean = false
+    var order: Int = 0
+    lateinit var iconId: String
 
-    var usePriority: Boolean = ruleConfiguration.priority != null
-    var priority = ruleConfiguration.priority ?: 0
+    var usePriority: Boolean = false
+    var priority: Int = 0
 
-    var useAnnotation: Boolean = ruleConfiguration.annotationText != null
-    var annotationText = ruleConfiguration.annotationText ?: ""
-    var annotationStyle: String? = ruleConfiguration.annotationStyle ?: HsfAnnotationTextStyles.defaultId
+    var useAnnotation: Boolean = false
+    lateinit var annotationText: String
+    var annotationStyle: String? = null
 
-    var useForegroundColor = ruleConfiguration.foregroundColorHex != null
-    var foregroundColorHex = ruleConfiguration.foregroundColorHex
+    var useForegroundColor: Boolean = false
+    var foregroundColorHex: String? = null
+
+    init {
+        updateModel(ruleConfiguration)
+    }
+
+    fun updateModel(ruleConfiguration: HsfRuleConfiguration) {
+        pattern = ruleConfiguration.pattern
+        isShared = ruleConfiguration.isShared
+        order = ruleConfiguration.order
+        iconId = ruleConfiguration.iconId
+
+        usePriority = ruleConfiguration.priority != null
+        priority = ruleConfiguration.priority ?: 0
+
+        useAnnotation = ruleConfiguration.annotationText != null
+        annotationText = ruleConfiguration.annotationText ?: ""
+        annotationStyle = ruleConfiguration.annotationStyle ?: HsfAnnotationTextStyles.defaultId
+
+        useForegroundColor = ruleConfiguration.foregroundColorHex != null
+        foregroundColorHex = ruleConfiguration.foregroundColorHex
+    }
+
 }

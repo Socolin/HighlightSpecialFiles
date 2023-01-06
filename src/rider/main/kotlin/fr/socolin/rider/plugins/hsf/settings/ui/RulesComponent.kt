@@ -1,52 +1,38 @@
 package fr.socolin.rider.plugins.hsf.settings.ui
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
-import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.ui.VerticalFlowLayout
+import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.panel
-import com.jetbrains.rd.ui.bedsl.button
+import com.intellij.util.containers.SortedList
 import com.jetbrains.rd.util.lifetime.Lifetime
-import fr.socolin.rider.plugins.hsf.models.HsfRuleConfiguration
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
-import java.awt.*
+import fr.socolin.rider.plugins.hsf.settings.HsfRuleConfigurationHelper
+import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import java.util.*
-import javax.swing.BoxLayout
-import javax.swing.JButton
 import javax.swing.JPanel
+import kotlin.collections.HashSet
 
 class RulesComponent(
     private val project: Project,
     private val lifetime: Lifetime,
-) : JPanel(GridBagLayout()) {
-    private var rulesPanel: JPanel = JPanel(GridBagLayout())
-    private val ruleComponents: ArrayList<RuleComponent> = ArrayList()
+) {
+    val panel: DialogPanel
+    private var rulesPanel: JPanel = JPanel(VerticalFlowLayout())
+    private val ruleComponents: SortedList<RuleComponent> = SortedList { a, b -> a.order - b.order }
 
     init {
-        val actionConstraint = GridBagConstraints()
-        actionConstraint.fill = GridBagConstraints.HORIZONTAL
-        actionConstraint.anchor = GridBagConstraints.PAGE_START
-        actionConstraint.gridwidth = 1
-        actionConstraint.weightx = 1.0
-        actionConstraint.gridy = 0
-        add(createActionPanel(), actionConstraint)
-        val rulesConstraint = GridBagConstraints()
-        rulesConstraint.gridy = 1
-        actionConstraint.gridwidth = 1
-        rulesConstraint.fill = GridBagConstraints.HORIZONTAL
-        actionConstraint.anchor = GridBagConstraints.PAGE_START
-        rulesConstraint.weightx = 1.0
-        add(rulesPanel, rulesConstraint)
-    }
-
-    private fun createActionPanel(): JPanel {
-        val panel = JPanel(FlowLayout(FlowLayout.LEFT))
-
-        val addButton = JButton(AllIcons.General.Add)
-        addButton.preferredSize = Dimension(30, 30)
-        addButton.addActionListener { _ -> addNewRule() }
-        panel.add(addButton)
-        return panel
+        panel = panel {
+            group("Rules") {
+                row {
+                    button("Add Rule") { addNewRule() }
+                }
+                row {
+                    cell(rulesPanel).align(AlignX.FILL)
+                }
+            }
+        }
     }
 
     private fun addNewRule() {
@@ -54,41 +40,45 @@ class RulesComponent(
     }
 
     fun setRules(rules: Collection<HsfRuleConfiguration>) {
+        val diffResult = HsfRuleConfigurationHelper.computeDiffBetweenRules(getRules(), rules)
+
+        val removedRuleIds = HashSet(diffResult.removedRules.map { r -> r.id })
+        this.ruleComponents.removeIf { r -> removedRuleIds.contains(r.ruleId) }
+
+        for (addedRule in diffResult.addedRules) {
+            addRule(addedRule)
+        }
+
+        for (updatedRule in diffResult.updatedRules) {
+            val rc = this.ruleComponents.find { r -> r.ruleId == updatedRule.id }
+            rc?.setRule(updatedRule)
+        }
+
         this.rulesPanel.removeAll()
-        this.ruleComponents.clear()
-        for (rule in rules) {
-            addRule(rule)
+        for (ruleComponent in this.ruleComponents) {
+            this.rulesPanel.add(ruleComponent)
         }
     }
 
     fun getRules(): List<HsfRuleConfiguration> {
-        val actualRules = ArrayList<HsfRuleConfiguration>()
-        for (ruleComponent in ruleComponents) {
-            actualRules.add(ruleComponent.getRule())
-        }
-        return actualRules
+        return ruleComponents.map { c -> c.getRule() }
     }
 
     private fun addRule(rule: HsfRuleConfiguration) {
-        val ruleConstraint = GridBagConstraints()
-        ruleConstraint.gridy = this.ruleComponents.size
-        ruleConstraint.anchor = GridBagConstraints.FIRST_LINE_START
-        ruleConstraint.weightx = 1.0
-        ruleConstraint.fill = GridBagConstraints.HORIZONTAL
-
         val ruleComponent = RuleComponent(rule, HsfIconManager.getInstance(project))
-        this.rulesPanel.add(ruleComponent, ruleConstraint)
+        this.rulesPanel.add(ruleComponent)
         ruleComponents.add(ruleComponent)
 
         ruleComponent.onDelete.advise(lifetime) { deletedRule ->
             run {
-                val rc = this.rulesPanel.components.find { c -> (c as RuleComponent).ruleModel.id == deletedRule.id }
+                val rc = this.rulesPanel.components.find { c -> (c as RuleComponent).ruleId == deletedRule.id }
                 this.rulesPanel.remove(rc)
                 ruleComponents.remove(rc)
-                revalidate()
+                rulesPanel.revalidate()
             }
         }
 
-        revalidate()
+        rulesPanel.revalidate()
     }
+
 }

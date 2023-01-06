@@ -1,8 +1,7 @@
 package fr.socolin.rider.plugins.hsf.settings.storage.converters
 
 import com.intellij.util.xmlb.Converter
-import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
-import fr.socolin.rider.plugins.hsf.models.HsfRuleConfiguration
+import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
 import org.intellij.markdown.html.urlEncode
 import java.net.URLDecoder
