@@ -6,5 +6,4 @@ class HsfIcon(
     val id: String,
     val name: String,
     val icon: Icon?,
-) {
-}
+)
