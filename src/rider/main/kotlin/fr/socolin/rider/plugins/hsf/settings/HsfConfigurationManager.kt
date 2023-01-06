@@ -47,7 +47,7 @@ class HsfConfigurationManager(project: Project) {
             updateRule(rule)
         }
         for (rule in diffResult.addedRules) {
-            updateRule(rule)
+            addRule(rule)
         }
     }
 
