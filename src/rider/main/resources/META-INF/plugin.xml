@@ -19,7 +19,7 @@
                 parentId="appearance"
                 instance="fr.socolin.rider.plugins.hsf.settings.HsfSettingsConfigurable"
                 id="fr.socolin.rider.plugins.ProjectSettingsConfigurable"
-                displayName="Highlight Special Files"
+                displayName="Highlights Special Files"
                 nonDefaultProject="true"/>
     </extensions>
 </idea-plugin>
