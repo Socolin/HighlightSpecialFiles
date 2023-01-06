@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 1.2.1
+
+- Fix adding rules
+
 ## 1.2.0
 
 - Support loading icons from `.idea` folder so you can now use any icons you want. It supports svg and png.
