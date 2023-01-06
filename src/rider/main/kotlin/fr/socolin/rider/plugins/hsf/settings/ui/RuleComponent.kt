@@ -4,8 +4,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.ColorPanel
+import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.dsl.builder.impl.CollapsibleTitledSeparatorImpl
 import com.jetbrains.rd.util.reactive.Signal
 import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
@@ -14,7 +18,9 @@ import fr.socolin.rider.plugins.hsf.settings.ui.renderers.ComboCellStyleRender
 import fr.socolin.rider.plugins.hsf.settings.ui.renderers.ComboCellWithIconRender
 import icons.CollaborationToolsIcons
 import java.awt.Color
+import java.awt.Container
 import java.awt.GridLayout
+import javax.swing.JComponent
 import javax.swing.JPanel
 
 class RuleComponent(
@@ -25,6 +31,7 @@ class RuleComponent(
     val ruleId = ruleConfiguration.id
     private val panel: DialogPanel
     private val ruleModel = RuleModel(ruleConfiguration)
+    private lateinit var patternTextField: Cell<JBTextField>
 
     val order: Int
         get() = ruleModel.order
@@ -61,8 +68,11 @@ class RuleComponent(
                 }
                 group("Match") {
                     row("Pattern") {
-                        textField()
+                        patternTextField = textField()
                             .bindText(ruleModel::pattern)
+                            .whenTextChangedFromUi { pattern ->
+                                updateLabelWithPattern(patternTextField.component, pattern)
+                            }
                             .comment("A regex used to match on the filename (does not include the path)")
                     }
                 }
@@ -139,6 +149,7 @@ class RuleComponent(
     fun setRule(updatedRule: HsfRuleConfiguration) {
         ruleModel.updateModel(updatedRule)
         panel.reset()
+        updateLabelWithPattern(patternTextField.component, ruleModel.pattern)
     }
 
     companion object {
@@ -146,6 +157,31 @@ class RuleComponent(
             if (c == null)
                 return null
             return "#${c.red.toString(16)}${c.green.toString(16)}${c.blue.toString(16)}"
+        }
+
+        private fun updateLabelWithPattern(component: JComponent, pattern: String) {
+            val label = findRuleLabelInParentOf(component);
+            if (label != null)
+                label.text = "Rule: $pattern"
+        }
+
+        private fun findRuleLabelInParentOf(container: Container?): JBLabel? {
+            if (container == null)
+                return null;
+
+            if (container is DialogPanel) {
+                for (component in container.components) {
+                    if (component is TitledSeparator) {
+                        for (child in component.components) {
+                            if (child is JBLabel && child.text.startsWith("Rule: "))
+                                return child;
+                        }
+                    }
+                }
+
+            }
+
+            return findRuleLabelInParentOf(container.parent);
         }
     }
 }
