@@ -7,6 +7,7 @@ import com.intellij.openapi.util.IconLoader.CachedImageIcon
 import com.intellij.openapi.util.ImageDataByUrlLoader
 import com.intellij.ui.scale.ScaleContext
 import com.intellij.util.io.systemIndependentPath
+import com.intellij.util.ui.JBUI
 import com.jetbrains.rd.util.reactive.Signal
 import java.net.URL
 import java.nio.file.Path
@@ -94,8 +95,8 @@ class HsfIconManager(private val project: Project) {
                 cachedImageIcon = cachedImageIcon.copy()
                 cachedImageIcon.updateScaleContext(scaleContext)
             }
-            // FIXME: Is 16 always valid ?
-            return cachedImageIcon.scaleToWidth(16.0f)
+
+            return cachedImageIcon.scaleToWidth(JBUI.pixScale(16.0f))
         } catch (e: Exception) {
             logger.error("Failed to load project icon $iconFile", e)
         }
