@@ -6,7 +6,7 @@
     <idea-version since-build="_PLACEHOLDER_" until-build="_PLACEHOLDER_"/>
     <depends>com.intellij.modules.rider</depends>
 
-    <description>Allow you to change how files are displayed in the solution explorer. It allow you to change the icons, the order in which files are displayed, and more !</description>
+    <description>Allow you to change how files are displayed in the solution explorer. It allows you to change the icons, the order in which files are displayed, and more !</description>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Project Model -->
