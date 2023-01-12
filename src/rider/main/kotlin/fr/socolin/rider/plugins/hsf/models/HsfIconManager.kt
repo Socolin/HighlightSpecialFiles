@@ -3,15 +3,14 @@ package fr.socolin.rider.plugins.hsf.models
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
-import com.intellij.openapi.util.IconLoader.CachedImageIcon
-import com.intellij.openapi.util.ImageDataByUrlLoader
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.scale.ScaleContext
+import com.intellij.ui.scale.UserScaleContext
 import com.intellij.util.io.systemIndependentPath
 import com.intellij.util.ui.JBUI
 import com.jetbrains.rd.util.reactive.Signal
 import java.net.URL
 import java.nio.file.Path
-import java.util.*
 import javax.swing.Icon
 import kotlin.io.path.Path
 import kotlin.io.path.exists
@@ -76,18 +75,56 @@ class HsfIconManager(private val project: Project) {
         addIcon(hsfIcon)
     }
 
-    @Suppress("UnstableApiUsage")
     private fun loadIconFromDisk(iconFile: Path): Icon? {
         try {
+            val imageDataByUrlLoaderClass = Class.forName("com.intellij.openapi.util.ImageDataByUrlLoader")
+            val imageDataByUrlLoaderConstructor = imageDataByUrlLoaderClass.constructors.find { c -> c.parameterCount == 4}
+            val filePathUrl = if (SystemInfo.isWindows)  "file:/" + iconFile.systemIndependentPath else  "file://" + iconFile.systemIndependentPath
+            val resolver = imageDataByUrlLoaderConstructor!!.newInstance(
+                URL(filePathUrl),
+                iconFile.systemIndependentPath,
+                null,
+                false
+            );
+            val resolveMethod = imageDataByUrlLoaderClass.getDeclaredMethod("resolve");
+            resolveMethod.invoke(resolver);
+            val cachedImageIconClass = Class.forName("com.intellij.openapi.util.IconLoader\$CachedImageIcon")
+            val scalableIconClass = Class.forName("com.intellij.openapi.util.ScalableIcon")
+            val scaleContextAwareClass = Class.forName("com.intellij.ui.scale.ScaleContextAware")
+            val cachedImageIconConstructor = cachedImageIconClass.constructors.find { c -> c.parameterCount == 4}
+            var cachedImageIcon = cachedImageIconConstructor!!.newInstance(
+                iconFile.systemIndependentPath, resolver, null, null
+            )
+            val scaleToWidth = scalableIconClass.getDeclaredMethod("scaleToWidth", Float::class.java);
+            val copyMethod = cachedImageIconClass.getDeclaredMethod("copy");
+            val getScaleContextMethod = scaleContextAwareClass.getDeclaredMethod("getScaleContext");
+            val updateScaleContextMethod = scaleContextAwareClass.getDeclaredMethod("updateScaleContext", UserScaleContext::class.java);
+
+            val scaleContext = ScaleContext.create()
+            if (getScaleContextMethod.invoke(cachedImageIcon) != scaleContext) {
+                // honor scale context as 'iconCache' doesn't do that
+                cachedImageIcon = copyMethod(cachedImageIcon);
+                updateScaleContextMethod.invoke(cachedImageIcon, scaleContext)
+            }
+            return scaleToWidth.invoke(cachedImageIcon, JBUI.pixScale(16.0f)) as Icon
+        } catch (e: Exception) {
+            logger.error("Failed to load project icon $iconFile", e)
+        }
+        return null;
+    }
+/*
+    private fun loadIconFromDiskInternalApi(iconFile: Path): Icon? {
+        try {
+            val filePathUrl = if (SystemInfo.isWindows)  "file:/" + iconFile.systemIndependentPath else  "file://" + iconFile.systemIndependentPath
             val resolver =
                 ImageDataByUrlLoader(
-                    URL("file://" + iconFile.systemIndependentPath),
+                    URL(filePathUrl),
                     iconFile.systemIndependentPath,
                     null,
                     false
                 )
             resolver.resolve()
-            var cachedImageIcon = CachedImageIcon(iconFile.systemIndependentPath, resolver, null, null)
+            var cachedImageIcon = IconLoader.CachedImageIcon(iconFile.systemIndependentPath, resolver, null, null)
 
             val scaleContext = ScaleContext.create()
             if (cachedImageIcon.scaleContext != scaleContext) {
@@ -101,7 +138,7 @@ class HsfIconManager(private val project: Project) {
             logger.error("Failed to load project icon $iconFile", e)
         }
         return null;
-    }
+    }*/
 
     private fun addIcon(hsfIcon: HsfIcon) {
         allIcons.add(hsfIcon)
