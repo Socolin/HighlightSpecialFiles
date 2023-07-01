@@ -1,5 +1,6 @@
 package fr.socolin.rider.plugins.hsf.models
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
@@ -58,21 +59,51 @@ class HsfIconManager(private val project: Project) {
         allIcons.add(None)
         filesIcons.add(None)
         folderIcons.add(None)
+        addBuiltInIcons()
         addDefaultIcons()
         addProjectIcons(project)
     }
 
     private fun addDefaultIcons() {
-        // For future
-        // addDefaultIcon(
-        //     "hsf.icons.defaults.xxxxx",
-        //     "Xxxxxx",
-        //     "/icons/xxxxx.svg",
-        // )
+        addDefaultIcon(
+            "hsf.icons.defaults.exceptions_folder",
+            "Exceptions folder",
+            "/icons/exceptions_folder.svg",
+        )
+    }
+
+    private fun addBuiltInIcons() {
+        addBuiltInIcon("Nodes.Folder", AllIcons.Nodes.Folder, true)
+        addBuiltInIcon("Nodes.ConfigFolder", AllIcons.Nodes.ConfigFolder, true)
+        addBuiltInIcon("Nodes.WebFolder", AllIcons.Nodes.WebFolder, true)
+        addBuiltInIcon("Nodes.LogFolder", AllIcons.Nodes.LogFolder, true)
+        addBuiltInIcon("Nodes.ResourceBundle", AllIcons.Nodes.ResourceBundle, true)
+        addBuiltInIcon("Nodes.ResourcesRoot", AllIcons.Modules.ResourcesRoot, true)
+        addBuiltInIcon("Nodes.TestGroup", AllIcons.Nodes.TestGroup, true)
+
+        addBuiltInIcon("Debugger.Db_exception_breakpoint", AllIcons.Debugger.Db_exception_breakpoint, false)
+        addBuiltInIcon("RunConfigurations.TestError", AllIcons.RunConfigurations.TestError, false)
+        addBuiltInIcon("RunConfigurations.TestFailed", AllIcons.RunConfigurations.TestFailed, false)
+        addBuiltInIcon("Nodes.AbstractException", AllIcons.Nodes.AbstractException, false)
+        addBuiltInIcon("Nodes.Annotationtype", AllIcons.Nodes.Annotationtype, false)
+        addBuiltInIcon("Nodes.Class", AllIcons.Nodes.Class, false)
+        addBuiltInIcon("Nodes.ExceptionClass", AllIcons.Nodes.ExceptionClass, false)
+        addBuiltInIcon("Nodes.Function", AllIcons.Nodes.Function, false)
+        addBuiltInIcon("Nodes.Interface", AllIcons.Nodes.Interface, false)
+        addBuiltInIcon("Nodes.Method", AllIcons.Nodes.Method, false)
+        addBuiltInIcon("Nodes.Static", AllIcons.Nodes.Static, false)
+        addBuiltInIcon("Nodes.Type", AllIcons.Nodes.Type, false)
+        addBuiltInIcon("Nodes.Test", AllIcons.Nodes.Test, false)
+        addBuiltInIcon("Nodes.Variable", AllIcons.Nodes.Variable, false)
     }
 
     private fun addDefaultIcon(id: String, name: String, filePath: String) {
         val hsfIcon = HsfIcon(id, name, IconLoader.getIcon(filePath, HsfIconManager::class.java), false)
+        addIcon(hsfIcon)
+    }
+
+    private fun addBuiltInIcon(name: String, icon: Icon, folderOnly: Boolean) {
+        val hsfIcon = HsfIcon("hsf.icons.built-in.$name", name, icon , folderOnly)
         addIcon(hsfIcon)
     }
 
