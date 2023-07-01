@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add new options on rules to regroup multiple files in a virtual folder
 - Add some built-in icons
 - Add a button to duplicate a rule
+- Fix rule ordering not always honoured
 
 ## 1.3.1
 

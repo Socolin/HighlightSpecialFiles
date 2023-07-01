@@ -8,6 +8,7 @@ import java.util.regex.Pattern
 class HsfHighlightingRule(
     val id: UUID,
     val pattern: Pattern,
+    val order: Int,
     val icon: HsfIcon,
     val priority: Int?,
     val annotationText: String?,

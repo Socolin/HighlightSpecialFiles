@@ -4,6 +4,7 @@ import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.ui.SimpleTextAttributes
+import com.intellij.util.containers.SortedList
 import com.jetbrains.rd.platform.util.lifetime
 import com.jetbrains.rider.model.RdDependencyFolderDescriptor
 import com.jetbrains.rider.model.RdProjectFolderDescriptor
@@ -28,8 +29,8 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         HsfConfigurationManager.getInstance(project)
     private val hsfIconManager: HsfIconManager = HsfIconManager.getInstance(project)
 
-    private val activeRules: ArrayList<HsfHighlightingRule> = ArrayList()
-    private val activeRulesWithPriority: ArrayList<HsfHighlightingRule> = ArrayList()
+    private val activeRules: SortedList<HsfHighlightingRule> = SortedList { a, b -> a.order - b.order }
+    private val activeRulesWithPriority: SortedList<HsfHighlightingRule> = SortedList { a, b -> a.order - b.order }
 
     init {
         for (rule in rulesConfigurationManager.getOrderedRules()) {
@@ -60,22 +61,24 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         val activeRule = createRuleFromConfig(newRule)
         for ((index, rule) in activeRules.withIndex()) {
             if (rule.id == previousRule.id) {
-                activeRules[index] = activeRule
+                activeRules.removeAt(index)
+                activeRules.add(activeRule);
                 break
             }
         }
         if (isRuleModifyingFilePriority(previousRule)) {
             for ((index, rule) in activeRulesWithPriority.withIndex()) {
                 if (rule.id == previousRule.id) {
-                    if (isRuleModifyingFilePriority(activeRule))
-                        activeRulesWithPriority[index] = activeRule
+                    if (isRuleModifyingFilePriority(activeRule)) {
+                        activeRulesWithPriority.removeAt(index)
+                        activeRulesWithPriority.add(activeRule)
+                    }
                     else
                         activeRulesWithPriority.removeAt(index)
                     break
                 }
             }
         } else if (isRuleModifyingFilePriority(newRule)) {
-            // FIXME: Should insert at correct place
             activeRulesWithPriority.add(activeRule)
         }
     }
@@ -118,6 +121,7 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
     ) = HsfHighlightingRule(
         ruleConfig.id,
         Pattern.compile(ruleConfig.pattern),
+        ruleConfig.order,
         hsfIconManager.getIcon(ruleConfig.iconId),
         ruleConfig.priority,
         ruleConfig.annotationText,
@@ -168,7 +172,13 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
                 if (firstElement is SolutionExplorerModelNode) {
                     val firstNodeEntity = firstElement.entity;
                     if (firstNodeEntity != null) {
-                        val virtualFolder = VirtualFolderNode(firstElement.project, firstNodeEntity.toReference(), settings, rule, filesToGroup)
+                        val virtualFolder = VirtualFolderNode(
+                            firstElement.project,
+                            firstNodeEntity.toReference(),
+                            settings,
+                            rule,
+                            filesToGroup
+                        )
                         children.removeAll(filesToGroup)
                         virtualNodes.add(virtualFolder)
                     }
