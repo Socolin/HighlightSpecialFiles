@@ -113,7 +113,7 @@ class RuleComponent(
                             .bindText(ruleModel::annotationText)
                             .visibleIf(useAnnotationCheckbox.selected)
                         comboBox(HsfAnnotationTextStyles.sortedStyles, ComboCellStyleRender())
-                            .bindItemNullable(ruleModel::annotationStyle)
+                            .bindItem(ruleModel::annotationStyle)
                             .visibleIf(useAnnotationCheckbox.selected)
                     }
                     lateinit var useForegroundCheckbox: Cell<JBCheckBox>
