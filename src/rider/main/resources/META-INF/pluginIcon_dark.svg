@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file. -->
+
+<svg
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   version="1.1"
+   id="svg431"
+   sodipodi:docname="pluginIcon_dark.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs435">
+    <linearGradient
+       id="F03"
+       x1="8.3066029"
+       y1="2.6825859"
+       x2="16.31415"
+       y2="9.5461986"
+       gradientTransform="scale(0.9258201,1.0801234)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#344753"
+         id="stop345" />
+      <stop
+         offset="1"
+         stop-color="#024551"
+         id="stop347" />
+    </linearGradient>
+    <linearGradient
+       id="F07"
+       x1="6.000971"
+       y1="6.0010421"
+       x2="12.000335"
+       y2="12.00037"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#1E2D3C"
+         id="stop358" />
+      <stop
+         offset="1"
+         stop-color="#63BEFF"
+         id="stop360" />
+    </linearGradient>
+    <linearGradient
+       id="F09"
+       x1="8.9442634"
+       y1="4.4721898"
+       x2="17.888544"
+       y2="4.4721898"
+       gradientTransform="scale(0.89442719,1.118034)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#8691A1"
+         id="stop367" />
+      <stop
+         offset="1"
+         stop-color="#B4CBD6"
+         id="stop369" />
+    </linearGradient>
+    <linearGradient
+       id="F10"
+       x1="13.870352"
+       y1="1.2620406"
+       x2="19.115986"
+       y2="5.2857904"
+       gradientTransform="scale(0.87582113,1.1417856)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0"
+         stop-color="#FFFFFF"
+         id="stop374" />
+      <stop
+         offset="0.2269899994134903"
+         stop-color="#7D95A6"
+         id="stop376" />
+      <stop
+         offset="1"
+         stop-color="#94B6C4"
+         id="stop378" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="namedview433"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="true"
+     inkscape:zoom="133.457"
+     inkscape:cx="11.505578"
+     inkscape:cy="10.081899"
+     inkscape:window-width="1920"
+     inkscape:window-height="1080"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg431">
+    <inkscape:grid
+       type="xygrid"
+       id="grid834" />
+  </sodipodi:namedview>
+  <g
+     fill="none"
+     fill-opacity="0.8"
+     fill-rule="evenodd"
+     id="g429"
+     transform="matrix(0.28571429,0,0,0.28571429,0.14285713,0.71428565)"
+     style="fill:#afb1b3;fill-opacity:1">
+    <polygon
+       fill="#9aa7b0"
+       points="7,1 3,5 7,5 "
+       id="polygon425"
+       style="fill:#afb1b3;fill-opacity:1" />
+    <polygon
+       fill="#9aa7b0"
+       points="3,15 13,15 13,1 8,1 8,6 3,6 "
+       id="polygon427"
+       style="fill:#afb1b3;fill-opacity:1" />
+  </g>
+  <rect
+     style="fill:#afb1b3;fill-opacity:1;stroke-width:1.05627"
+     id="rect2032-6"
+     width="10.041412"
+     height="2"
+     x="5"
+     y="12" />
+  <g
+     fill="none"
+     fill-opacity="0.8"
+     fill-rule="evenodd"
+     id="g429-3"
+     transform="matrix(0.28571429,0,0,0.28571429,0.14285713,5.7142856)"
+     style="fill:#afb1b3;fill-opacity:1">
+    <polygon
+       fill="#9aa7b0"
+       points="7,1 3,5 7,5 "
+       id="polygon425-6"
+       style="fill:#afb1b3;fill-opacity:1" />
+    <polygon
+       fill="#9aa7b0"
+       points="8,1 8,6 3,6 3,15 13,15 13,1 "
+       id="polygon427-7"
+       style="fill:#afb1b3;fill-opacity:1" />
+  </g>
+  <g
+     fill="none"
+     fill-opacity="0.8"
+     fill-rule="evenodd"
+     id="g429-3-5"
+     transform="matrix(0.28571429,0,0,0.28571429,0.14285713,10.714286)"
+     style="fill:#c75450;fill-opacity:1">
+    <polygon
+       fill="#9aa7b0"
+       points="7,1 3,5 7,5 "
+       id="polygon425-6-3"
+       style="fill:#c75450;fill-opacity:1" />
+    <polygon
+       fill="#9aa7b0"
+       points="8,1 8,6 3,6 3,15 13,15 13,1 "
+       id="polygon427-7-5"
+       style="fill:#c75450;fill-opacity:1" />
+  </g>
+  <rect
+     style="fill:#f0a732;fill-opacity:1;stroke-width:1.05671"
+     id="rect2032-9"
+     width="10.049683"
+     height="2"
+     x="5"
+     y="7" />
+  <rect
+     style="fill:#afb1b3;fill-opacity:1;stroke-width:0.818397"
+     id="rect2032"
+     width="6.0279651"
+     height="2"
+     x="5"
+     y="2" />
+  <rect
+     style="fill:#499c54;fill-opacity:1;stroke-width:0.58494"
+     id="rect2032-1"
+     width="3.0793962"
+     height="2"
+     x="11.972487"
+     y="1.9695119" />
+  <path
+     fill-rule="evenodd"
+     clip-rule="evenodd"
+     d="m 12.81019,8.9703656 0.01633,-0.3539502 -0.504207,0.5089317 -0.347799,0.305777 c -0.195691,0.185897 -0.50005,-0.09324 -0.301136,-0.280645 l 1.19283,-1.0744103 c 0.09517,-0.085385 0.24216,-0.082222 0.333803,0 l 1.192821,1.0744103 c 0.20348,0.182565 -0.105384,0.466592 -0.301124,0.280645 L 13.7439,9.1253471 13.239695,8.6185099 l 0.01633,0.3518557 v 3.0856914 l -0.01633,0.353935 0.504205,-0.50892 0.347808,-0.305788 c 0.195684,-0.185869 0.500057,0.09325 0.301124,0.28066 l -1.192821,1.074424 c -0.09517,0.08535 -0.24216,0.08222 -0.333803,0 l -1.192829,-1.074424 c -0.203453,-0.182578 0.1054,-0.4666 0.301142,-0.28066 l 0.347798,0.305788 0.504206,0.506847 -0.01633,-0.351862 z"
+     fill="#6e6e6e"
+     id="path3445"
+     style="fill:#3592c4;fill-opacity:1;stroke-width:0.357438" />
+</svg>
