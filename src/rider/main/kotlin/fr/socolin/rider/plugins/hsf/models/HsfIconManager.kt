@@ -51,9 +51,9 @@ class HsfIconManager(private val project: Project) {
 
     private fun loadIcons() {
         allIcons.add(None)
-        addBuiltInIcons()
         addDefaultIcons()
         addProjectIcons(project)
+        addBuiltInIcons()
     }
 
     private fun addDefaultIcons() {
