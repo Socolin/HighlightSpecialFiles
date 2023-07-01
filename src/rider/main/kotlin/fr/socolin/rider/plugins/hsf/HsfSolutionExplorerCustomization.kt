@@ -64,20 +64,28 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
                 break
             }
         }
-        if (previousRule.priority != null) {
+        if (isRuleModifyingFilePriority(previousRule)) {
             for ((index, rule) in activeRulesWithPriority.withIndex()) {
                 if (rule.id == previousRule.id) {
-                    if (activeRule.priority != null)
+                    if (isRuleModifyingFilePriority(activeRule))
                         activeRulesWithPriority[index] = activeRule
                     else
                         activeRulesWithPriority.removeAt(index)
                     break
                 }
             }
-        } else if (newRule.priority != null) {
+        } else if (isRuleModifyingFilePriority(newRule)) {
             // FIXME: Should insert at correct place
             activeRulesWithPriority.add(activeRule)
         }
+    }
+
+    private fun isRuleModifyingFilePriority(rule: HsfRuleConfiguration): Boolean {
+        return rule.priority != null && !rule.groupInVirtualFolder;
+    }
+
+    private fun isRuleModifyingFilePriority(rule: HsfHighlightingRule): Boolean {
+        return rule.priority != null && !rule.groupInVirtualFolder;
     }
 
     private fun removeRule(deletedRule: HsfRuleConfiguration) {
@@ -186,28 +194,9 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
     }
 
     override fun compareNodes(x: ProjectModelEntity, y: ProjectModelEntity): Int {
-        var xPriority = 0
-        var yPriority = 0
-        if (isFolder(x.descriptor))
-            xPriority = 1000
-        if (isFolder(y.descriptor))
-            yPriority = 1000
-        for (rule in activeRulesWithPriority) {
-            val xMatch = rule.pattern.matcher(x.name)
-            if (xMatch.matches()) {
-                if (rule.priority != null)
-                    xPriority = rule.priority
-                break
-            }
-        }
-        for (rule in activeRulesWithPriority) {
-            val yMatch = rule.pattern.matcher(y.name)
-            if (yMatch.matches()) {
-                if (rule.priority != null)
-                    yPriority = rule.priority
-                break
-            }
-        }
+        var xPriority = computePriority(x)
+        var yPriority = computePriority(y)
+
         if (xPriority > yPriority)
             return -1
         if (xPriority < yPriority)
@@ -216,8 +205,27 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         return super.compareNodes(x, y)
     }
 
+    private fun computePriority(entity: ProjectModelEntity): Int {
+        var priority = 0
+        if (isFolder(entity.descriptor))
+            priority = 1000
+        if (entity is VirtualFolderProjectModelEntity)
+            priority = entity.rule.priority ?: priority
+        else
+            for (rule in activeRulesWithPriority) {
+                val xMatch = rule.pattern.matcher(entity.name)
+                if (xMatch.matches()) {
+                    if (rule.priority != null)
+                        priority = rule.priority
+                    break
+                }
+            }
+        return priority;
+    }
+
     private fun isFolder(descriptor: RdProjectModelItemDescriptor) =
         (descriptor is RdProjectFolderDescriptor
+                || descriptor is VirtualFolderItemDescriptor
                 || descriptor is RdDependencyFolderDescriptor
                 || descriptor is RdSolutionFolderDescriptor)
 

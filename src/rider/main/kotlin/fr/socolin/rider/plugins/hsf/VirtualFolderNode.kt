@@ -28,7 +28,8 @@ class VirtualFolderNode(
 
     override val entity: ProjectModelEntity?
         get() {
-            return value.getEntity(myProject)?.parentEntity
+            val parentEntity = value.getEntity(myProject)?.parentEntity ?: return null;
+            return VirtualFolderProjectModelEntity(parentEntity, rule)
         }
 
     override val entityReference: ProjectModelEntityReference
