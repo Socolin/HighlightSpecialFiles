@@ -41,6 +41,8 @@ class HsfIconManager(private val project: Project) {
         for (iconFolder in iconFolders) {
             val iconFiles = iconFolder.listDirectoryEntries("*.*")
             for (iconFile in iconFiles) {
+                if (iconFile.fileName.nameWithoutExtension.endsWith("_dark"))
+                    continue;
                 addProjectIcon(iconFile)
             }
         }
