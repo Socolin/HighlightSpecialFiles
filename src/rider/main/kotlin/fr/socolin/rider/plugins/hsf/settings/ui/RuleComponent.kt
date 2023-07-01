@@ -1,6 +1,5 @@
 package fr.socolin.rider.plugins.hsf.settings.ui
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.ComboBox
@@ -95,11 +94,13 @@ class RuleComponent(
                     row("Icon") {
                         val iconComboBox: Cell<ComboBox<HsfIcon>> =
                             comboBox(hsfIconManager.icons, ComboCellWithIconRender())
-                            .bindItem(
-                                { hsfIconManager.getIcon(ruleModel.iconId) },
-                                { v -> ruleModel.iconId = v?.id ?: HsfIconManager.None.id })
+                                .bindItem(
+                                    { hsfIconManager.getIcon(ruleModel.iconId) },
+                                    { v -> ruleModel.iconId = v?.id ?: HsfIconManager.None.id })
                         hsfIconManager.onReload.advise(lifetime) { icons ->
+                            val selectedIcon = hsfIconManager.getIcon(ruleModel.iconId);
                             iconComboBox.component.model = DefaultComboBoxModel(Vector(icons))
+                            iconComboBox.component.selectedItem = selectedIcon;
                         }
                     }
                     lateinit var usePriorityCheckbox: Cell<JBCheckBox>
@@ -144,27 +145,32 @@ class RuleComponent(
                             .visibleIf(useForegroundCheckbox.selected)
                     }
                     lateinit var groupInVirtualFolderCheckbox: Cell<JBCheckBox>
-                    row("Group in virtual folder") {
+                    row("Virtual Folder") {
                         groupInVirtualFolderCheckbox = checkBox("Group in virtual folder")
                             .bindSelected(ruleModel::groupInVirtualFolder)
+                    }
+                    indent {
+                        row {
+                            label("Folder icon")
+                            val iconComboBox: Cell<ComboBox<HsfIcon>> =
+                                comboBox(hsfIconManager.icons, ComboCellWithIconRender())
+                                    .bindItem(
+                                        { hsfIconManager.getIcon(ruleModel.folderIconId) },
+                                        { v -> ruleModel.folderIconId = v?.id ?: HsfIconManager.None.id })
 
-                        val iconComboBox: Cell<ComboBox<HsfIcon>> =
-                            comboBox(hsfIconManager.iconsForFolder, ComboCellWithIconRender())
-                                .label("Folder icon")
-                                .bindItem(
-                                    { hsfIconManager.getIcon(ruleModel.folderIconId) },
-                                    { v -> ruleModel.folderIconId = v?.id ?: HsfIconManager.None.id })
-                                .visibleIf(groupInVirtualFolderCheckbox.selected)
-                        hsfIconManager.onReload.advise(lifetime) { icons ->
-                            iconComboBox.component.model = DefaultComboBoxModel(Vector(icons))
+                            hsfIconManager.onReloadFolder.advise(lifetime) { icons ->
+                                val selectedIcon = hsfIconManager.getIcon(ruleModel.iconId);
+                                iconComboBox.component.model = DefaultComboBoxModel(Vector(icons))
+                                iconComboBox.component.selectedItem = selectedIcon;
+                            }
                         }
 
-                        intTextField()
-                            .label("Folder name")
-                            .bindText(ruleModel::folderName)
-                            .resizableColumn()
-                            .visibleIf(groupInVirtualFolderCheckbox.selected)
-                    }
+                        row {
+                            label("Folder name")
+                            textField()
+                                .bindText(ruleModel::folderName)
+                        }
+                    }.visibleIf(groupInVirtualFolderCheckbox.selected)
                 }
             }
         }

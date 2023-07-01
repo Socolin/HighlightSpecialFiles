@@ -10,27 +10,21 @@ import com.intellij.ui.scale.UserScaleContext
 import com.intellij.util.io.systemIndependentPath
 import com.intellij.util.ui.JBUI
 import com.jetbrains.rd.util.reactive.Signal
+import icons.RiderIcons
 import java.net.URL
 import java.nio.file.Path
 import javax.swing.Icon
-import kotlin.io.path.Path
-import kotlin.io.path.exists
-import kotlin.io.path.listDirectoryEntries
-import kotlin.io.path.name
+import kotlin.io.path.*
 
 class HsfIconManager(private val project: Project) {
     val onReload = Signal<Collection<HsfIcon>>()
 
     private val logger: Logger = Logger.getInstance(HsfIconManager::class.java)
     private val allIcons: ArrayList<HsfIcon> = ArrayList()
-    private val filesIcons: ArrayList<HsfIcon> = ArrayList()
-    private val folderIcons: ArrayList<HsfIcon> = ArrayList()
     private val iconsByIds: HashMap<String, HsfIcon> = HashMap()
 
     val icons: Collection<HsfIcon>
-        get() = filesIcons
-    val iconsForFolder: Collection<HsfIcon>
-        get() = folderIcons
+        get() = allIcons
 
     init {
         loadIcons()
@@ -50,8 +44,6 @@ class HsfIconManager(private val project: Project) {
 
     fun reloadIcons() {
         allIcons.clear()
-        filesIcons.clear()
-        folderIcons.clear()
         // FIXME: Only reload project icons ?
         loadIcons()
         onReload.fire(icons)
@@ -59,8 +51,6 @@ class HsfIconManager(private val project: Project) {
 
     private fun loadIcons() {
         allIcons.add(None)
-        filesIcons.add(None)
-        folderIcons.add(None)
         addBuiltInIcons()
         addDefaultIcons()
         addProjectIcons(project)
@@ -75,52 +65,55 @@ class HsfIconManager(private val project: Project) {
     }
 
     private fun addBuiltInIcons() {
-        addBuiltInIcon("Nodes.Folder", AllIcons.Nodes.Folder, true)
-        addBuiltInIcon("Nodes.ConfigFolder", AllIcons.Nodes.ConfigFolder, true)
-        addBuiltInIcon("Nodes.WebFolder", AllIcons.Nodes.WebFolder, true)
-        addBuiltInIcon("Nodes.LogFolder", AllIcons.Nodes.LogFolder, true)
-        addBuiltInIcon("Nodes.ResourceBundle", AllIcons.Nodes.ResourceBundle, true)
-        addBuiltInIcon("Nodes.ResourcesRoot", AllIcons.Modules.ResourcesRoot, true)
-        addBuiltInIcon("Nodes.TestGroup", AllIcons.Nodes.TestGroup, true)
+        addBuiltInIcon("Nodes.Folder", AllIcons.Nodes.Folder)
+        addBuiltInIcon("Nodes.ConfigFolder", AllIcons.Nodes.ConfigFolder)
+        addBuiltInIcon("Nodes.WebFolder", AllIcons.Nodes.WebFolder)
+        addBuiltInIcon("Nodes.LogFolder", AllIcons.Nodes.LogFolder)
+        addBuiltInIcon("Nodes.ResourceBundle", AllIcons.Nodes.ResourceBundle)
+        addBuiltInIcon("Nodes.ResourcesRoot", AllIcons.Modules.ResourcesRoot)
+        addBuiltInIcon("Nodes.TestGroup", AllIcons.Nodes.TestGroup)
 
-        addBuiltInIcon("Debugger.Db_exception_breakpoint", AllIcons.Debugger.Db_exception_breakpoint, false)
-        addBuiltInIcon("RunConfigurations.TestError", AllIcons.RunConfigurations.TestError, false)
-        addBuiltInIcon("RunConfigurations.TestFailed", AllIcons.RunConfigurations.TestFailed, false)
-        addBuiltInIcon("Nodes.AbstractException", AllIcons.Nodes.AbstractException, false)
-        addBuiltInIcon("Nodes.Annotationtype", AllIcons.Nodes.Annotationtype, false)
-        addBuiltInIcon("Nodes.Class", AllIcons.Nodes.Class, false)
-        addBuiltInIcon("Nodes.ExceptionClass", AllIcons.Nodes.ExceptionClass, false)
-        addBuiltInIcon("Nodes.Function", AllIcons.Nodes.Function, false)
-        addBuiltInIcon("Nodes.Interface", AllIcons.Nodes.Interface, false)
-        addBuiltInIcon("Nodes.Method", AllIcons.Nodes.Method, false)
-        addBuiltInIcon("Nodes.Static", AllIcons.Nodes.Static, false)
-        addBuiltInIcon("Nodes.Type", AllIcons.Nodes.Type, false)
-        addBuiltInIcon("Nodes.Test", AllIcons.Nodes.Test, false)
-        addBuiltInIcon("Nodes.Variable", AllIcons.Nodes.Variable, false)
+        addBuiltInIcon("Debugger.Db_exception_breakpoint", AllIcons.Debugger.Db_exception_breakpoint)
+        addBuiltInIcon("RunConfigurations.TestError", AllIcons.RunConfigurations.TestError)
+        addBuiltInIcon("RunConfigurations.TestFailed", AllIcons.RunConfigurations.TestFailed)
+        addBuiltInIcon("Nodes.AbstractException", AllIcons.Nodes.AbstractException)
+        addBuiltInIcon("Nodes.Annotationtype", AllIcons.Nodes.Annotationtype)
+        addBuiltInIcon("Nodes.Class", AllIcons.Nodes.Class)
+        addBuiltInIcon("Nodes.ExceptionClass", AllIcons.Nodes.ExceptionClass)
+        addBuiltInIcon("Nodes.Function", AllIcons.Nodes.Function)
+        addBuiltInIcon("Nodes.Interface", AllIcons.Nodes.Interface)
+        addBuiltInIcon("Nodes.Method", AllIcons.Nodes.Method)
+        addBuiltInIcon("Nodes.Static", AllIcons.Nodes.Static)
+        addBuiltInIcon("Nodes.Type", AllIcons.Nodes.Type)
+        addBuiltInIcon("Nodes.Test", AllIcons.Nodes.Test)
+        addBuiltInIcon("Nodes.Variable", AllIcons.Nodes.Variable)
+        addBuiltInIcon("RiderIcons.Diagramming.Injection", RiderIcons.Diagramming.Injection)
     }
 
     private fun addDefaultIcon(id: String, name: String, filePath: String) {
-        val hsfIcon = HsfIcon(id, name, IconLoader.getIcon(filePath, HsfIconManager::class.java), false)
+        val hsfIcon = HsfIcon(id, name, IconLoader.getIcon(filePath, HsfIconManager::class.java))
         addIcon(hsfIcon)
     }
 
-    private fun addBuiltInIcon(name: String, icon: Icon, folderOnly: Boolean) {
-        val hsfIcon = HsfIcon("hsf.icons.built-in.$name", name, icon , folderOnly)
+    private fun addBuiltInIcon(name: String, icon: Icon) {
+        val hsfIcon = HsfIcon("hsf.icons.built-in.$name", name, icon)
         addIcon(hsfIcon)
     }
 
     private fun addProjectIcon(iconFile: Path) {
         val icon: Icon? = loadIconFromDisk(iconFile)
         val iconName = iconFile.name.substringBeforeLast('.')
-        val hsfIcon = HsfIcon("hsf.icons.project." + iconFile.fileName, iconName, icon, false)
+        val hsfIcon = HsfIcon("hsf.icons.project." + iconFile.fileName, iconName, icon)
         addIcon(hsfIcon)
     }
 
     private fun loadIconFromDisk(iconFile: Path): Icon? {
         try {
             val imageDataByUrlLoaderClass = Class.forName("com.intellij.openapi.util.ImageDataByUrlLoader")
-            val imageDataByUrlLoaderConstructor = imageDataByUrlLoaderClass.constructors.find { c -> c.parameterCount == 4}
-            val filePathUrl = if (SystemInfo.isWindows)  "file:/" + iconFile.systemIndependentPath else  "file://" + iconFile.systemIndependentPath
+            val imageDataByUrlLoaderConstructor =
+                imageDataByUrlLoaderClass.constructors.find { c -> c.parameterCount == 4 }
+            val filePathUrl =
+                if (SystemInfo.isWindows) "file:/" + iconFile.systemIndependentPath else "file://" + iconFile.systemIndependentPath
             val resolver = imageDataByUrlLoaderConstructor!!.newInstance(
                 URL(filePathUrl),
                 iconFile.systemIndependentPath,
@@ -132,14 +125,16 @@ class HsfIconManager(private val project: Project) {
             val cachedImageIconClass = Class.forName("com.intellij.openapi.util.CachedImageIcon")
             val scalableIconClass = Class.forName("com.intellij.openapi.util.ScalableIcon")
             val scaleContextAwareClass = Class.forName("com.intellij.ui.scale.ScaleContextAware")
-            val cachedImageIconConstructor = cachedImageIconClass.constructors.find { c -> c.parameterCount == 2 && c.parameterTypes[0].name == "java.lang.String" }
+            val cachedImageIconConstructor =
+                cachedImageIconClass.constructors.find { c -> c.parameterCount == 2 && c.parameterTypes[0].name == "java.lang.String" }
             var cachedImageIcon = cachedImageIconConstructor!!.newInstance(
                 iconFile.systemIndependentPath, resolver
             )
             val scaleToWidth = scalableIconClass.getDeclaredMethod("scaleToWidth", Float::class.java);
             val copyMethod = cachedImageIconClass.getDeclaredMethod("copy");
             val getScaleContextMethod = scaleContextAwareClass.getDeclaredMethod("getScaleContext");
-            val updateScaleContextMethod = scaleContextAwareClass.getDeclaredMethod("updateScaleContext", UserScaleContext::class.java);
+            val updateScaleContextMethod =
+                scaleContextAwareClass.getDeclaredMethod("updateScaleContext", UserScaleContext::class.java);
 
             val scaleContext = ScaleContext.create()
             if (getScaleContextMethod.invoke(cachedImageIcon) != scaleContext) {
@@ -153,42 +148,36 @@ class HsfIconManager(private val project: Project) {
         }
         return null;
     }
-/*    private fun loadIconFromDiskInternalApi(iconFile: Path): Icon? {
-        try {
-            val filePathUrl = if (SystemInfo.isWindows)  "file:/" + iconFile.systemIndependentPath else  "file://" + iconFile.systemIndependentPath
-            val resolver =
-                ImageDataByUrlLoader(
-                    URL(filePathUrl),
-                    iconFile.systemIndependentPath,
-                    null,
-                    false
-                )
-            resolver.resolve()
-            var cachedImageIcon = CachedImageIcon(iconFile.systemIndependentPath, resolver)
+    /*    private fun loadIconFromDiskInternalApi(iconFile: Path): Icon? {
+            try {
+                val filePathUrl = if (SystemInfo.isWindows)  "file:/" + iconFile.systemIndependentPath else  "file://" + iconFile.systemIndependentPath
+                val resolver =
+                    ImageDataByUrlLoader(
+                        URL(filePathUrl),
+                        iconFile.systemIndependentPath,
+                        null,
+                        false
+                    )
+                resolver.resolve()
+                var cachedImageIcon = CachedImageIcon(iconFile.systemIndependentPath, resolver)
 
-            val scaleContext = ScaleContext.create()
-            if (cachedImageIcon.scaleContext != scaleContext) {
-                // honor scale context as 'iconCache' doesn't do that
-                cachedImageIcon = cachedImageIcon.copy()
-                cachedImageIcon.updateScaleContext(scaleContext)
+                val scaleContext = ScaleContext.create()
+                if (cachedImageIcon.scaleContext != scaleContext) {
+                    // honor scale context as 'iconCache' doesn't do that
+                    cachedImageIcon = cachedImageIcon.copy()
+                    cachedImageIcon.updateScaleContext(scaleContext)
+                }
+
+                return cachedImageIcon.scaleToWidth(JBUI.pixScale(16.0f))
+            } catch (e: Exception) {
+                logger.error("Failed to load project icon $iconFile", e)
             }
-
-            return cachedImageIcon.scaleToWidth(JBUI.pixScale(16.0f))
-        } catch (e: Exception) {
-            logger.error("Failed to load project icon $iconFile", e)
-        }
-        return null;
-    }*/
+            return null;
+        }*/
 
     private fun addIcon(hsfIcon: HsfIcon) {
         allIcons.add(hsfIcon)
         iconsByIds[hsfIcon.id] = hsfIcon
-        if (hsfIcon.folderOnly)
-            folderIcons.add(hsfIcon)
-        else {
-            folderIcons.add(hsfIcon)
-            filesIcons.add(hsfIcon)
-        }
     }
 
     fun getIcon(id: String?): HsfIcon {
@@ -196,7 +185,7 @@ class HsfIconManager(private val project: Project) {
     }
 
     companion object {
-        val None = HsfIcon("none", "None", null, false)
+        val None = HsfIcon("none", "None", null)
 
         fun getInstance(project: Project): HsfIconManager {
             return project.getService(HsfIconManager::class.java)
