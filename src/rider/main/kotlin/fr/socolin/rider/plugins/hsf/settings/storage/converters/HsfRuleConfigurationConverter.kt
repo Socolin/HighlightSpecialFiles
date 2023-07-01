@@ -20,6 +20,9 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
             var annotationStyle: String? = null
             var foregroundColorHex: String? = null
             var priority: Int? = null
+            var groupInVirtualFolder: Boolean = false
+            var folderIconId: String = HsfIconManager.None.id
+            var folderName: String? = null
 
             for (param in serializedRule.split('&')) {
                 val confArray = param.split('=', limit = 2)
@@ -37,6 +40,9 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
                     "foregroundColorHex" -> foregroundColorHex = URLDecoder.decode(value, Charsets.UTF_8)
                     "priority" -> priority = value.toInt()
                     "order" -> order = value.toInt()
+                    "groupInVirtualFolder" -> groupInVirtualFolder = value.toBoolean()
+                    "folderIconId" -> folderIconId = URLDecoder.decode(value, Charsets.UTF_8)
+                    "folderName" -> folderName = URLDecoder.decode(value, Charsets.UTF_8)
                 }
             }
 
@@ -53,6 +59,9 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
                     annotationText,
                     annotationStyle,
                     foregroundColorHex,
+                    groupInVirtualFolder,
+                    folderIconId,
+                    folderName,
                     shared
                 )
             )
@@ -77,6 +86,12 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
             }
             if (rule.foregroundColorHex != null)
                 sb.append("&foregroundColorHex=").append(urlEncode(rule.foregroundColorHex))
+            if (rule.groupInVirtualFolder) {
+                sb.append("&groupInVirtualFolder=").append(urlEncode(true.toString()))
+                sb.append("&folderIconId=").append(urlEncode(rule.folderIconId))
+                if (rule.folderName != null)
+                    sb.append("&folderName=").append(urlEncode(rule.folderName))
+            }
             sb.append('/')
         }
         if (sb.length > 1)

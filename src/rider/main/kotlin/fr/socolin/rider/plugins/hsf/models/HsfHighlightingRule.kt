@@ -13,4 +13,8 @@ class HsfHighlightingRule(
     val annotationText: String?,
     val annotationStyle: SimpleTextAttributes?,
     val foregroundColor: Color?,
-)
+    val groupInVirtualFolder: Boolean,
+    val virtualFolderIcon: HsfIcon,
+    val virtualFolderName: String?,
+) {
+}

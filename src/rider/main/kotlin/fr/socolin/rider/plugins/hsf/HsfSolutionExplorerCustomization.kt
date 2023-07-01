@@ -1,6 +1,7 @@
 package fr.socolin.rider.plugins.hsf
 
 import com.intellij.ide.projectView.PresentationData
+import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rd.platform.util.lifetime
@@ -10,13 +11,15 @@ import com.jetbrains.rider.model.RdProjectModelItemDescriptor
 import com.jetbrains.rider.model.RdSolutionFolderDescriptor
 import com.jetbrains.rider.projectView.ProjectModelViewUpdater
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerCustomization
+import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewSettings
+import com.jetbrains.rider.projectView.views.solutionExplorer.nodes.SolutionExplorerModelNode
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
-import com.jetbrains.rider.projectView.workspace.getFile
+import com.jetbrains.rider.projectView.workspace.toReference
 import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
 import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
-import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
 import fr.socolin.rider.plugins.hsf.settings.HsfConfigurationManager
+import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import java.awt.Color
 import java.util.regex.Pattern
 
@@ -114,11 +117,13 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
             ruleConfig.annotationStyle,
             SimpleTextAttributes.GRAYED_ATTRIBUTES
         ),
-        colorFromHex(ruleConfig.foregroundColorHex)
+        colorFromHex(ruleConfig.foregroundColorHex),
+        ruleConfig.groupInVirtualFolder,
+        hsfIconManager.getIcon(ruleConfig.folderIconId),
+        ruleConfig.folderName
     )
 
     override fun updateNode(presentation: PresentationData, entity: ProjectModelEntity) {
-        entity.getFile()
         for (rule in activeRules) {
             val match = rule.pattern.matcher(entity.name)
             if (match.matches()) {
@@ -127,6 +132,45 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         }
 
         super.updateNode(presentation, entity)
+    }
+
+    override fun modifyChildren(
+        entity: ProjectModelEntity,
+        settings: SolutionExplorerViewSettings,
+        children: MutableList<AbstractTreeNode<*>>
+    ) {
+        var virtualNodes: ArrayList<AbstractTreeNode<*>>? = null;
+        for (rule in activeRules) {
+            if (!rule.groupInVirtualFolder) continue;
+
+            val filesToGroup = ArrayList<AbstractTreeNode<*>>();
+            for (child in children) {
+                val name = child.name ?: continue;
+                val match = rule.pattern.matcher(name)
+                if (match.matches()) {
+                    filesToGroup.add(child);
+                }
+            }
+
+            if (filesToGroup.isNotEmpty()) {
+                if (virtualNodes == null)
+                    virtualNodes = ArrayList()
+                val firstElement = filesToGroup.first()
+
+                if (firstElement is SolutionExplorerModelNode) {
+                    val firstNodeEntity = firstElement.entity;
+                    if (firstNodeEntity != null) {
+                        val virtualFolder = VirtualFolderNode(firstElement.project, firstNodeEntity.toReference(), settings, rule, filesToGroup)
+                        children.removeAll(filesToGroup)
+                        virtualNodes.add(virtualFolder)
+                    }
+                }
+            }
+        }
+
+        if (virtualNodes != null)
+            children.addAll(virtualNodes)
+        super.modifyChildren(entity, settings, children)
     }
 
     private fun applyRule(rule: HsfHighlightingRule, presentation: PresentationData) {

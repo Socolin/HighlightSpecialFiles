@@ -12,7 +12,10 @@ class HsfRuleConfiguration(
     val annotationText: String? = null,
     val annotationStyle: String? = null,
     val foregroundColorHex: String? = null,
-    val isShared: Boolean = false
+    val groupInVirtualFolder: Boolean = false,
+    val folderIconId: String = HsfIconManager.None.id,
+    val folderName: String? = null,
+    val isShared: Boolean = false,
 ) {
     fun isDifferentFrom(other: HsfRuleConfiguration): Boolean {
         return pattern != other.pattern
@@ -23,5 +26,8 @@ class HsfRuleConfiguration(
                 || annotationText != other.annotationText
                 || annotationStyle != other.annotationStyle
                 || foregroundColorHex != other.foregroundColorHex
+                || groupInVirtualFolder != other.groupInVirtualFolder
+                || folderIconId != other.folderIconId
+                || folderName != other.folderName
     }
 }

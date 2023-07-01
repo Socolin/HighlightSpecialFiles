@@ -2,9 +2,7 @@ package fr.socolin.rider.plugins.hsf.models
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.CachedImageIcon
 import com.intellij.openapi.util.IconLoader
-import com.intellij.openapi.util.ImageDataByUrlLoader
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.ui.scale.ScaleContext
 import com.intellij.ui.scale.UserScaleContext
@@ -18,17 +16,20 @@ import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.name
-import kotlin.reflect.typeOf
 
 class HsfIconManager(private val project: Project) {
     val onReload = Signal<Collection<HsfIcon>>()
 
     private val logger: Logger = Logger.getInstance(HsfIconManager::class.java)
     private val allIcons: ArrayList<HsfIcon> = ArrayList()
+    private val filesIcons: ArrayList<HsfIcon> = ArrayList()
+    private val folderIcons: ArrayList<HsfIcon> = ArrayList()
     private val iconsByIds: HashMap<String, HsfIcon> = HashMap()
 
     val icons: Collection<HsfIcon>
-        get() = allIcons
+        get() = filesIcons
+    val iconsForFolder: Collection<HsfIcon>
+        get() = folderIcons
 
     init {
         loadIcons()
@@ -46,6 +47,8 @@ class HsfIconManager(private val project: Project) {
 
     fun reloadIcons() {
         allIcons.clear()
+        filesIcons.clear()
+        folderIcons.clear()
         // FIXME: Only reload project icons ?
         loadIcons()
         onReload.fire(icons)
@@ -53,6 +56,8 @@ class HsfIconManager(private val project: Project) {
 
     private fun loadIcons() {
         allIcons.add(None)
+        filesIcons.add(None)
+        folderIcons.add(None)
         addDefaultIcons()
         addProjectIcons(project)
     }
@@ -67,7 +72,7 @@ class HsfIconManager(private val project: Project) {
     }
 
     private fun addDefaultIcon(id: String, name: String, filePath: String) {
-        val hsfIcon = HsfIcon(id, name, IconLoader.getIcon(filePath, HsfIconManager::class.java))
+        val hsfIcon = HsfIcon(id, name, IconLoader.getIcon(filePath, HsfIconManager::class.java), false)
         addIcon(hsfIcon)
     }
 
@@ -145,6 +150,12 @@ class HsfIconManager(private val project: Project) {
     private fun addIcon(hsfIcon: HsfIcon) {
         allIcons.add(hsfIcon)
         iconsByIds[hsfIcon.id] = hsfIcon
+        if (hsfIcon.folderOnly)
+            folderIcons.add(hsfIcon)
+        else {
+            folderIcons.add(hsfIcon)
+            filesIcons.add(hsfIcon)
+        }
     }
 
     fun getIcon(id: String?): HsfIcon {
@@ -152,7 +163,7 @@ class HsfIconManager(private val project: Project) {
     }
 
     companion object {
-        val None = HsfIcon("none", "None", null)
+        val None = HsfIcon("none", "None", null, false)
 
         fun getInstance(project: Project): HsfIconManager {
             return project.getService(HsfIconManager::class.java)

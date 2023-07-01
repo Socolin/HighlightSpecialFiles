@@ -134,6 +134,28 @@ class RuleComponent(
                             )
                             .visibleIf(useForegroundCheckbox.selected)
                     }
+                    lateinit var groupInVirtualFolderCheckbox: Cell<JBCheckBox>
+                    row("Group in virtual folder") {
+                        groupInVirtualFolderCheckbox = checkBox("Group in virtual folder")
+                            .bindSelected(ruleModel::groupInVirtualFolder)
+
+                        val iconComboBox: Cell<ComboBox<HsfIcon>> =
+                            comboBox(hsfIconManager.iconsForFolder, ComboCellWithIconRender())
+                                .label("Folder icon")
+                                .bindItem(
+                                    { hsfIconManager.getIcon(ruleModel.folderIconId) },
+                                    { v -> ruleModel.folderIconId = v?.id ?: HsfIconManager.None.id })
+                                .visibleIf(groupInVirtualFolderCheckbox.selected)
+                        hsfIconManager.onReload.advise(lifetime) { icons ->
+                            iconComboBox.component.model = DefaultComboBoxModel(Vector(icons))
+                        }
+
+                        intTextField()
+                            .label("Folder name")
+                            .bindText(ruleModel::folderName)
+                            .resizableColumn()
+                            .visibleIf(groupInVirtualFolderCheckbox.selected)
+                    }
                 }
             }
         }
@@ -152,6 +174,9 @@ class RuleComponent(
             if (ruleModel.useAnnotation) ruleModel.annotationText else null,
             if (ruleModel.useAnnotation) ruleModel.annotationStyle else null,
             if (ruleModel.useForegroundColor) ruleModel.foregroundColorHex else null,
+            ruleModel.groupInVirtualFolder,
+            ruleModel.folderIconId,
+            if (ruleModel.groupInVirtualFolder) ruleModel.folderName else null,
             ruleModel.isShared
         )
     }
@@ -212,6 +237,10 @@ internal class RuleModel(ruleConfiguration: HsfRuleConfiguration) {
     var useForegroundColor: Boolean = false
     var foregroundColorHex: String? = null
 
+    var groupInVirtualFolder: Boolean = false
+    lateinit var folderIconId: String
+    lateinit var folderName: String
+
     init {
         updateModel(ruleConfiguration)
     }
@@ -231,6 +260,10 @@ internal class RuleModel(ruleConfiguration: HsfRuleConfiguration) {
 
         useForegroundColor = ruleConfiguration.foregroundColorHex != null
         foregroundColorHex = ruleConfiguration.foregroundColorHex
+
+        groupInVirtualFolder = ruleConfiguration.groupInVirtualFolder
+        folderIconId = if (ruleConfiguration.groupInVirtualFolder) ruleConfiguration.folderIconId else HsfIconManager.None.id
+        folderName = if (ruleConfiguration.groupInVirtualFolder) ruleConfiguration.folderName ?: "" else ""
     }
 
 }
