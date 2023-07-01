@@ -3,9 +3,9 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.7.22'
-    id 'org.jetbrains.intellij' version '1.13.0'     // https://github.com/JetBrains/gradle-intellij-plugin/releases
-    id 'com.jetbrains.rdgen' version '2023.1.2'    // https://github.com/JetBrains/rd/releases
+    id 'org.jetbrains.kotlin.jvm' version '1.8.22'
+    id 'org.jetbrains.intellij' version '1.13.3'     // https://github.com/JetBrains/gradle-intellij-plugin/releases
+    id 'com.jetbrains.rdgen' version '2023.2.2'
 }
 
 ext {
@@ -18,6 +18,7 @@ ext {
 repositories {
     maven { url 'https://cache-redirector.jetbrains.com/intellij-repository/snapshots' }
     maven { url 'https://cache-redirector.jetbrains.com/maven-central' }
+    mavenCentral()
 }
 
 wrapper {
@@ -37,9 +38,8 @@ sourceSets {
 }
 
 compileKotlin {
-    kotlinOptions { jvmTarget = "17" }
+    kotlinOptions { jvmTarget = "1.8" }
 }
-
 
 task setBuildTool {
     doLast {
@@ -172,5 +172,13 @@ publishPlugin {
     dependsOn buildPlugin
     if (hasProperty('intellijPublishToken')) {
         token intellijPublishToken
+    }
+}
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }

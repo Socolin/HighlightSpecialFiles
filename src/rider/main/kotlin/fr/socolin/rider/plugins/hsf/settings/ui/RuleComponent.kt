@@ -162,7 +162,7 @@ class RuleComponent(
                                         { hsfIconManager.getIcon(ruleModel.folderIconId) },
                                         { v -> ruleModel.folderIconId = v?.id ?: HsfIconManager.None.id })
 
-                            hsfIconManager.onReloadFolder.advise(lifetime) { icons ->
+                            hsfIconManager.onReload.advise(lifetime) { icons ->
                                 val selectedIcon = hsfIconManager.getIcon(ruleModel.iconId);
                                 iconComboBox.component.model = DefaultComboBoxModel(Vector(icons))
                                 iconComboBox.component.selectedItem = selectedIcon;

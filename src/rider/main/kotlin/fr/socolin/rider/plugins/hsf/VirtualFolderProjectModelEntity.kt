@@ -1,10 +1,9 @@
 package fr.socolin.rider.plugins.hsf
 
-import com.intellij.workspaceModel.storage.EntityReference
-import com.intellij.workspaceModel.storage.EntitySource
-import com.intellij.workspaceModel.storage.WorkspaceEntity
-import com.intellij.workspaceModel.storage.bridgeEntities.ContentRootEntity
-import com.intellij.workspaceModel.storage.url.VirtualFileUrl
+import com.intellij.platform.workspace.storage.EntityReference
+import com.intellij.platform.workspace.storage.EntitySource
+import com.intellij.platform.workspace.storage.WorkspaceEntity
+import com.intellij.platform.workspace.storage.url.VirtualFileUrl
 import com.jetbrains.rider.model.RdProjectModelItemDescriptor
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
@@ -17,8 +16,6 @@ class VirtualFolderProjectModelEntity(
         get() = sourceModelEntity.alternativeUrls
     override val childrenEntities: List<ProjectModelEntity>
         get() = sourceModelEntity.childrenEntities
-    override val contentRootEntity: ContentRootEntity?
-        get() = sourceModelEntity.contentRootEntity
     override val descriptor: RdProjectModelItemDescriptor
         get() = VirtualFolderItemDescriptor(rule.virtualFolderName ?: "", sourceModelEntity.descriptor.location)
     override val entitySource: EntitySource

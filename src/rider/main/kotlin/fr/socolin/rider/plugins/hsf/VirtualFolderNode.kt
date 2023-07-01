@@ -8,7 +8,6 @@ import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
-import com.intellij.workspaceModel.ide.impl.virtualFile
 import com.jetbrains.rider.projectView.nodes.getScopeColor
 import com.jetbrains.rider.projectView.views.*
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewSettings
@@ -76,8 +75,7 @@ class VirtualFolderNode(
     }
 
     override fun canNavigateToSource(): Boolean {
-        val virtualFile = virtualFile ?: return false
-        return !virtualFile.isDirectory
+        return false;
     }
 
     override fun expandOnDoubleClick(): Boolean {
@@ -89,7 +87,7 @@ class VirtualFolderNode(
         return entity?.isProjectFile() == true
     }
 
-    override fun getVirtualFile() = entity?.url?.virtualFile
+    override fun getVirtualFile() = null
 
     override fun contains(file: VirtualFile): Boolean {
         val entity = entity ?: return false
