@@ -58,6 +58,12 @@ class RuleComponent(
             collapsibleGroup("Rule: " + ruleModel.pattern) {
                 group("Metadata") {
                     row {
+                        label("")
+                            .resizableColumn()
+                        actionButton(duplicateAction)
+                        actionButton(deleteAction)
+                    }
+                    row {
                         intTextField()
                             .label("Order")
                             .bindIntText(ruleModel::order)
@@ -75,8 +81,6 @@ class RuleComponent(
                                 60
                             )
                             .resizableColumn()
-                        actionButton(duplicateAction)
-                        actionButton(deleteAction)
                     }
                 }
                 group("Match") {
