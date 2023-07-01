@@ -7,12 +7,14 @@ import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.io.exists
 import com.intellij.util.io.systemIndependentPath
 import com.jetbrains.rd.util.lifetime.Lifetime
+import com.jetbrains.rider.projectView.solutionDirectoryPath
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
 import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import java.nio.file.LinkOption
 import javax.swing.JPanel
 import kotlin.io.path.createDirectory
 import kotlin.io.path.exists
+import kotlin.io.path.relativeTo
 
 class HsfSettingsComponent(
     private val project: Project,
@@ -31,7 +33,7 @@ class HsfSettingsComponent(
                 group("Icon Folders") {
                     for (iconFolder in HsfIconManager.listIconsFolders(project, shouldExists = false)) {
                         row {
-                            link(iconFolder.systemIndependentPath) {
+                            link(iconFolder.relativeTo(project.solutionDirectoryPath).systemIndependentPath) {
                                 if (!iconFolder.exists(LinkOption.NOFOLLOW_LINKS))
                                     iconFolder.createDirectory()
                                 RevealFileAction.openDirectory(iconFolder)
