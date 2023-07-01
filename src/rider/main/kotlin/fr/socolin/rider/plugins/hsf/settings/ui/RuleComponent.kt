@@ -1,5 +1,6 @@
 package fr.socolin.rider.plugins.hsf.settings.ui
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.ComboBox
@@ -19,6 +20,7 @@ import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import fr.socolin.rider.plugins.hsf.settings.ui.renderers.ComboCellStyleRender
 import fr.socolin.rider.plugins.hsf.settings.ui.renderers.ComboCellWithIconRender
 import icons.CollaborationToolsIcons
+import icons.RiderIcons
 import java.awt.Color
 import java.awt.Container
 import java.awt.GridLayout
@@ -33,6 +35,7 @@ class RuleComponent(
     lifetime: Lifetime,
 ) : JPanel(GridLayout()) {
     val onDelete = Signal<HsfRuleConfiguration>()
+    val onDuplicate = Signal<HsfRuleConfiguration>()
     val ruleId = ruleConfiguration.id
     private val panel: DialogPanel
     private val ruleModel = RuleModel(ruleConfiguration)
@@ -42,9 +45,14 @@ class RuleComponent(
         get() = ruleModel.order
 
     init {
-        val action = object : DumbAwareAction("Delete Rule", "Delete this rule", CollaborationToolsIcons.Delete) {
+        val deleteAction = object : DumbAwareAction("Delete Rule", "Delete this rule", CollaborationToolsIcons.Delete) {
             override fun actionPerformed(e: AnActionEvent) {
                 onDelete.fire(ruleConfiguration)
+            }
+        }
+        val duplicateAction = object : DumbAwareAction("Duplicate Rule", "Duplicate this rule", RiderIcons.Toolbar.Duplicate) {
+            override fun actionPerformed(e: AnActionEvent) {
+                onDuplicate.fire(ruleConfiguration)
             }
         }
         panel = panel {
@@ -68,7 +76,8 @@ class RuleComponent(
                                 60
                             )
                             .resizableColumn()
-                        actionButton(action)
+                        actionButton(duplicateAction)
+                        actionButton(deleteAction)
                     }
                 }
                 group("Match") {

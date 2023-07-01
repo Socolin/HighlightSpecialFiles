@@ -78,6 +78,20 @@ class RulesComponent(
             }
         }
 
+        ruleComponent.onDuplicate.advise(lifetime) { duplicatedRule ->
+            run {
+                val newRuleConfiguration = HsfRuleConfiguration.createFrom(duplicatedRule)
+                val newRuleComponent = RuleComponent(newRuleConfiguration, HsfIconManager.getInstance(project), lifetime)
+                val index = this.rulesPanel.components.indexOfFirst { c -> (c as RuleComponent).ruleId == duplicatedRule.id }
+                if (index != -1)
+                    this.rulesPanel.add(newRuleComponent, index + 1)
+                else
+                    this.rulesPanel.add(newRuleComponent)
+                ruleComponents.add(newRuleComponent)
+                rulesPanel.revalidate()
+            }
+        }
+
         rulesPanel.revalidate()
     }
 

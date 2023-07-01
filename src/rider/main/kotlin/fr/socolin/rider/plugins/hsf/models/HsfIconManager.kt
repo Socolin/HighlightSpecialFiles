@@ -110,7 +110,7 @@ class HsfIconManager(private val project: Project) {
     private fun addProjectIcon(iconFile: Path) {
         val icon: Icon? = loadIconFromDisk(iconFile)
         val iconName = iconFile.name.substringBeforeLast('.')
-        val hsfIcon = HsfIcon("hsf.icons.project." + iconFile.fileName, iconName, icon)
+        val hsfIcon = HsfIcon("hsf.icons.project." + iconFile.fileName, iconName, icon, false)
         addIcon(hsfIcon)
     }
 

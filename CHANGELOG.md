@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Update to rider 2023.1
 - Add new options on rules to regroup multiple files in a virtual folder
 - Add some built-in icons
+- Add a button to duplicate a rule
 
 ## 1.3.1
 

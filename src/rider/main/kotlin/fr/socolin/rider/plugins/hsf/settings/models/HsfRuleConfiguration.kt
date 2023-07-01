@@ -30,4 +30,22 @@ class HsfRuleConfiguration(
                 || folderIconId != other.folderIconId
                 || folderName != other.folderName
     }
+
+    companion object {
+        fun createFrom(source: HsfRuleConfiguration): HsfRuleConfiguration {
+            return HsfRuleConfiguration(UUID.randomUUID()
+                , source.pattern
+                , source.order
+                , source.iconId
+                , source.priority
+                , source.annotationText
+                , source.annotationStyle
+                , source.foregroundColorHex
+                , source.groupInVirtualFolder
+                , source.folderIconId
+                , source.folderName
+                , source.isShared
+            )
+        }
+    }
 }
