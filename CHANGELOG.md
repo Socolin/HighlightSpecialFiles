@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 1.4.0
+
+- Update to rider 2023.1
+- Add new options on rules to regroup multiple files in a virtual folder
+- Add some built-in icons
+
 ## 1.3.1
 
 - Support Rider 2023.1-EAP8
