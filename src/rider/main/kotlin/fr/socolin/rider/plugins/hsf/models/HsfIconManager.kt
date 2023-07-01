@@ -62,6 +62,16 @@ class HsfIconManager(private val project: Project) {
             "Exceptions folder",
             "/icons/exceptions_folder.svg",
         )
+        addDefaultIcon(
+            "hsf.icons.defaults.request",
+            "Request",
+            "/icons/request.svg",
+        )
+        addDefaultIcon(
+            "hsf.icons.defaults.response",
+            "Response",
+            "/icons/response.svg",
+        )
     }
 
     private fun addBuiltInIcons() {
