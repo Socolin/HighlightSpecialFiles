@@ -2,6 +2,7 @@ package fr.socolin.rider.plugins.hsf
 
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeNode
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.containers.SortedList
@@ -16,6 +17,7 @@ import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerVi
 import com.jetbrains.rider.projectView.views.solutionExplorer.nodes.SolutionExplorerModelNode
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import com.jetbrains.rider.projectView.workspace.toReference
+import fr.socolin.rider.plugins.hsf.actions.OpenPluginSettingsAction
 import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
 import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
@@ -55,6 +57,11 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
                 ProjectModelViewUpdater.fireUpdate(project) { u -> u.updateAll() }
             }
         }
+    }
+
+    override fun addPrimaryToolbarActions(actionGroup: DefaultActionGroup) {
+        actionGroup.add(OpenPluginSettingsAction())
+        super.addPrimaryToolbarActions(actionGroup)
     }
 
     private fun updateRule(previousRule: HsfRuleConfiguration, newRule: HsfRuleConfiguration) {

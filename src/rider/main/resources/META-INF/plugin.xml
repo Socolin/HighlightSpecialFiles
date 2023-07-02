@@ -8,6 +8,11 @@
 
     <description>Allow you to change how files are displayed in the solution explorer. It allows you to change the icons, the order in which files are displayed, and more !</description>
 
+    <actions>
+        <action id="fr.socolin.rider.plugins.hsf.actions.OpenPluginSettingsAction"
+                class="fr.socolin.rider.plugins.hsf.actions.OpenPluginSettingsAction" />
+    </actions>
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- Project Model -->
         <projectService serviceImplementation="fr.socolin.rider.plugins.hsf.settings.HsfConfigurationManager"/>
