@@ -1,4 +1,4 @@
-package fr.socolin.rider.plugins.hsf
+package fr.socolin.rider.plugins.hsf.virtual_folder.node
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.projectView.PresentationData

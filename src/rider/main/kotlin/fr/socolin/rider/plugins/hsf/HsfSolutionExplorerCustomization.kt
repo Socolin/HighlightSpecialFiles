@@ -4,16 +4,15 @@ import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.containers.SortedList
 import com.jetbrains.rd.platform.util.lifetime
-import com.jetbrains.rider.model.RdDependencyFolderDescriptor
-import com.jetbrains.rider.model.RdProjectFolderDescriptor
-import com.jetbrains.rider.model.RdProjectModelItemDescriptor
-import com.jetbrains.rider.model.RdSolutionFolderDescriptor
+import com.jetbrains.rider.model.*
 import com.jetbrains.rider.projectView.ProjectModelViewUpdater
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerCustomization
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewSettings
+import com.jetbrains.rider.projectView.views.solutionExplorer.nodes.SolutionExplorerFileNode
 import com.jetbrains.rider.projectView.views.solutionExplorer.nodes.SolutionExplorerModelNode
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import com.jetbrains.rider.projectView.workspace.toReference
@@ -23,6 +22,11 @@ import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
 import fr.socolin.rider.plugins.hsf.settings.HsfConfigurationManager
 import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
+import fr.socolin.rider.plugins.hsf.virtual_folder.file.VirtualFolderFileNode
+import fr.socolin.rider.plugins.hsf.virtual_folder.file.VirtualFolderVirtualFile
+import fr.socolin.rider.plugins.hsf.virtual_folder.node.VirtualFolderItemDescriptor
+import fr.socolin.rider.plugins.hsf.virtual_folder.node.VirtualFolderNode
+import fr.socolin.rider.plugins.hsf.virtual_folder.node.VirtualFolderProjectModelEntity
 import java.awt.Color
 import java.util.regex.Pattern
 
@@ -153,6 +157,50 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         super.updateNode(presentation, entity)
     }
 
+    override fun updateNode(presentation: PresentationData, virtualFile: VirtualFile) {
+        for (rule in activeRules) {
+            val match = rule.pattern.matcher(virtualFile.name)
+            if (match.matches()) {
+                applyRule(rule, presentation)
+            }
+        }
+        super.updateNode(presentation, virtualFile)
+    }
+
+    override fun modifyChildren(
+        virtualFile: VirtualFile,
+        settings: SolutionExplorerViewSettings,
+        children: MutableList<AbstractTreeNode<*>>
+    ) {
+        super.modifyChildren(virtualFile, settings, children)
+        var virtualNodes: ArrayList<AbstractTreeNode<*>>? = null;
+        for (rule in activeRules) {
+            if (!rule.groupInVirtualFolder) continue;
+
+            val filesToGroup = getMatchingNodes(rule, children);
+            if (filesToGroup.isNotEmpty()) {
+                if (virtualNodes == null)
+                    virtualNodes = ArrayList()
+                val firstElement = filesToGroup.first()
+
+                if (firstElement is SolutionExplorerFileNode) {
+                    val virtualFolder = VirtualFolderFileNode(
+                        firstElement.project,
+                        VirtualFolderVirtualFile(virtualFile, rule),
+                        rule,
+                        filesToGroup
+                    )
+                    children.removeAll(filesToGroup)
+                    virtualNodes.add(virtualFolder)
+                }
+            }
+        }
+
+        if (virtualNodes != null)
+            children.addAll(virtualNodes)
+        super.modifyChildren(virtualFile, settings, children)
+    }
+
     override fun modifyChildren(
         entity: ProjectModelEntity,
         settings: SolutionExplorerViewSettings,
@@ -162,15 +210,7 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         for (rule in activeRules) {
             if (!rule.groupInVirtualFolder) continue;
 
-            val filesToGroup = ArrayList<AbstractTreeNode<*>>();
-            for (child in children) {
-                val name = child.name ?: continue;
-                val match = rule.pattern.matcher(name)
-                if (match.matches()) {
-                    filesToGroup.add(child);
-                }
-            }
-
+            val filesToGroup = getMatchingNodes(rule, children);
             if (filesToGroup.isNotEmpty()) {
                 if (virtualNodes == null)
                     virtualNodes = ArrayList()
@@ -198,6 +238,19 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         super.modifyChildren(entity, settings, children)
     }
 
+    private fun getMatchingNodes(rule: HsfHighlightingRule, nodes: MutableList<AbstractTreeNode<*>>): List<AbstractTreeNode<*>> {
+        val filesToGroup = ArrayList<AbstractTreeNode<*>>();
+        for (node in nodes) {
+            val name = node.name ?: continue;
+            val match = rule.pattern.matcher(name)
+            if (match.matches()) {
+                filesToGroup.add(node);
+            }
+        }
+
+        return filesToGroup;
+    }
+
     private fun applyRule(rule: HsfHighlightingRule, presentation: PresentationData) {
         val icon = rule.icon.icon
         if (icon != null)
@@ -211,8 +264,8 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
     }
 
     override fun compareNodes(x: ProjectModelEntity, y: ProjectModelEntity): Int {
-        var xPriority = computePriority(x)
-        var yPriority = computePriority(y)
+        val xPriority = computePriority(x)
+        val yPriority = computePriority(y)
 
         if (xPriority > yPriority)
             return -1
