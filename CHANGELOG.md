@@ -5,10 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-### 1.4.4
+### 1.5.0
 
-- Virtual folder no longer getting marked as error when a neighbor file is in error
-- Fix Navigate To Explorer / Always Select Opened File with virtual folders
+- Apply rule to change icon in Tabs and in the Switcher([Ctrl]+[Tab])
+- Add option to disable a rule from the configuration
+- Fix: Virtual folder no longer getting marked as error when a neighbor file is in error
+- Fix: Navigate To Explorer / Always Select Opened File now works with virtual folders
 
 ## 1.4.3
 
