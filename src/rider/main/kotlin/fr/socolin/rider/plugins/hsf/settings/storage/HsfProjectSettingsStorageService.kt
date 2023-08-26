@@ -2,6 +2,7 @@ package fr.socolin.rider.plugins.hsf.settings.storage
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.PersistentStateComponentWithModificationTracker
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
@@ -14,6 +15,7 @@ import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
     name = "fr.socolin.rider.plugins.hsf.settings.storage.ProjectSettingsStorageService",
     storages = [Storage("fr.socolin.hsf.project.xml")]
 )
+@Service(Service.Level.PROJECT)
 class HsfProjectSettingsStorageService(private val project: Project) :
     PersistentStateComponentWithModificationTracker<HsfProjectSettingsState?>,
     Disposable {

@@ -1,6 +1,7 @@
 package fr.socolin.rider.plugins.hsf.models
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
@@ -17,6 +18,7 @@ import java.nio.file.Path
 import javax.swing.Icon
 import kotlin.io.path.*
 
+@Service(Service.Level.PROJECT)
 class HsfIconManager(private val project: Project) {
     val onReload = Signal<Collection<HsfIcon>>()
 

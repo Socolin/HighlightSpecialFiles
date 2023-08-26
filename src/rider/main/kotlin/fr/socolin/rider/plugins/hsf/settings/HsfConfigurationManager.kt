@@ -1,5 +1,6 @@
 package fr.socolin.rider.plugins.hsf.settings
 
+import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.util.containers.SortedList
@@ -10,6 +11,7 @@ import fr.socolin.rider.plugins.hsf.settings.storage.HsfProjectSettingsStorageSe
 import fr.socolin.rider.plugins.hsf.settings.storage.HsfUserSettingsStorageService
 import java.util.*
 
+@Service(Service.Level.PROJECT)
 class HsfConfigurationManager(project: Project) {
     private val logger: Logger = Logger.getInstance(HsfConfigurationManager::class.java)
     private val hsfUserSettingsStorageService = HsfUserSettingsStorageService.getInstance(project);

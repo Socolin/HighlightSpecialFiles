@@ -23,11 +23,6 @@ Add new tool to easily create rules to enhance how the files are show in Solutio
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Project Model -->
-        <projectService serviceImplementation="fr.socolin.rider.plugins.hsf.settings.HsfConfigurationManager"/>
-        <projectService serviceImplementation="fr.socolin.rider.plugins.hsf.settings.storage.HsfProjectSettingsStorageService"/>
-        <projectService serviceImplementation="fr.socolin.rider.plugins.hsf.settings.storage.HsfUserSettingsStorageService"/>
-        <projectService serviceImplementation="fr.socolin.rider.plugins.hsf.models.HsfIconManager"/>
         <solutionExplorerCustomization implementation="fr.socolin.rider.plugins.hsf.HsfSolutionExplorerCustomization"/>
         <projectConfigurable
                 parentId="appearance"
