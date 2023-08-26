@@ -30,5 +30,6 @@ Add new tool to easily create rules to enhance how the files are show in Solutio
                 id="fr.socolin.rider.plugins.ProjectSettingsConfigurable"
                 displayName="Highlights Special Files"
                 nonDefaultProject="true"/>
+        <fileIconPatcher implementation="fr.socolin.rider.plugins.hsf.HsfFileIconPatcher" />
     </extensions>
 </idea-plugin>
