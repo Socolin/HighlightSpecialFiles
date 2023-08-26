@@ -8,107 +8,92 @@ import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
-import com.jetbrains.rider.projectView.nodes.getScopeColor
 import com.jetbrains.rider.projectView.views.*
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewSettings
-import com.jetbrains.rider.projectView.withProjectModelId
+import com.jetbrains.rider.projectView.views.solutionExplorer.nodes.SolutionExplorerModelNode
 import com.jetbrains.rider.projectView.workspace.*
 import com.jetbrains.rider.projectView.workspace.impl.WorkspaceEntityErrorsSupport
 import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
 
 class VirtualFolderNode(
     project: Project,
-    entityReference: ProjectModelEntityReference,
+    filesToGroup: List<SolutionExplorerModelNode>,
     val settings: SolutionExplorerViewSettings,
+    private val parentEntity: VirtualFolderProjectModelEntity,
     private val rule: HsfHighlightingRule,
-    private val filesToGroup: List<AbstractTreeNode<*>>
 ) :
-    SolutionViewNode<ProjectModelEntityReference>(project, entityReference), ClickableNode, SolutionViewEntityOwner {
+    SolutionViewNode<List<SolutionExplorerModelNode>>(project, filesToGroup), ClickableNode, SolutionViewEntityOwner {
 
-    override val entity: ProjectModelEntity?
+    override val entity: ProjectModelEntity
         get() {
-            val parentEntity = value.getEntity(myProject)?.parentEntity ?: return null;
-            return VirtualFolderProjectModelEntity(parentEntity, rule)
+            return parentEntity;
         }
 
     override val entityReference: ProjectModelEntityReference
-        get() = value
+        get () {
+            return parentEntity.toReference()
+        }
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
-        return ArrayList(filesToGroup)
+        return ArrayList(value)
     }
 
     override fun update(presentation: PresentationData) {
-        val entity = entity
-        if (entity == null) {
-            // That means this node is already detached from the model and should be reloaded soon
-            presentation.addText(name, SimpleTextAttributes.REGULAR_ATTRIBUTES)
-            presentation.setIcon(AllIcons.Actions.Refresh)
-            return
-        }
-
         presentation.setIcon(rule.virtualFolderIcon.icon ?: AllIcons.Nodes.Folder)
         presentation.addText(rule.virtualFolderName ?: "<No title>", SimpleTextAttributes.REGULAR_ATTRIBUTES)
 
-        if (entity.isProjectFile() || entity.isProjectFolder()) {
-            virtualFile?.let {
-                presentation.addNonIndexedMark(myProject, it)
-            }
+        virtualFile?.let {
+            presentation.addNonIndexedMark(myProject, it)
         }
     }
 
     override fun hasProblemFileBeneath(): Boolean {
-        val entity = entity ?: return false
-        return Registry.`is`("projectView.showHierarchyErrors")
-                && WorkspaceEntityErrorsSupport.getInstance(myProject).hasErrors(entity)
-    }
+        if (!Registry.`is`("projectView.showHierarchyErrors"))
+            return false;
 
-    override fun navigate(requestFocus: Boolean) {
-        val entityId = entity?.getId(myProject)
-        if (entityId != null) {
-            withProjectModelId(entityId) {
-                super.navigate(requestFocus)
-            }
-        } else {
-            super.navigate(requestFocus)
+        for (abstractTreeNode in value) {
+            val entity = abstractTreeNode.entityReference.getEntity(project)
+            if (entity != null)
+                if (WorkspaceEntityErrorsSupport.getInstance(myProject).hasErrors(entity))
+                    return true
         }
-    }
-
-    override fun canNavigateToSource(): Boolean {
         return false;
     }
 
+    override fun navigate(requestFocus: Boolean) {
+    }
+
+    override fun canNavigateToSource(): Boolean {
+        return false
+    }
+
     override fun expandOnDoubleClick(): Boolean {
-        val entity = entity ?: return false
-        return !entity.isProjectFile()
+        return true
     }
 
     override fun showInplaceComments(): Boolean {
-        return entity?.isProjectFile() == true
+        return true
     }
 
     override fun getVirtualFile() = null
 
     override fun contains(file: VirtualFile): Boolean {
-        val entity = entity ?: return false
-        if (entity.isSolution()) {
-            return true
+        for (node in this.value) {
+            val nodeVirtualFile = node.entity?.getVirtualFileAsContentRoot();
+            if (nodeVirtualFile != null) {
+                if (file.path === nodeVirtualFile.path)
+                    return true;
+                if (VfsUtil.isAncestor(nodeVirtualFile, file, false))
+                    return true;
+            }
         }
-
-        // Check file system
-        val settings = settings
-        if (settings.isShowAllFiles()) {
-            val currentFile = entity.getVirtualFileAsContentRoot() ?: return false
-            return VfsUtil.isAncestor(currentFile, file, false)
-        }
-
-        return false
+        return false;
     }
 
-    override fun getBackgroundColor() =
-        virtualFile?.getScopeColor(project!!, isInProjectModel = true, highlightNonProjectItems = true)
+    override fun getBackgroundColor() = null;
 
-    override fun getName(): String = entity?.name ?: "INVALID"
+    override fun getName(): String = rule.virtualFolderName ?: "INVALID"
+
     override fun getLinkData(): ClickableNodeLink? {
         return null
     }

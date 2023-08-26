@@ -177,7 +177,7 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         for (rule in activeRules) {
             if (!rule.groupInVirtualFolder) continue;
 
-            val filesToGroup = getMatchingNodes(rule, children);
+            val filesToGroup = getMatchingNodes<AbstractTreeNode<*>>(rule, children);
             if (filesToGroup.isNotEmpty()) {
                 if (virtualNodes == null)
                     virtualNodes = ArrayList()
@@ -210,26 +210,19 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         for (rule in activeRules) {
             if (!rule.groupInVirtualFolder) continue;
 
-            val filesToGroup = getMatchingNodes(rule, children);
+            val filesToGroup = getMatchingNodes<SolutionExplorerModelNode>(rule, children);
             if (filesToGroup.isNotEmpty()) {
                 if (virtualNodes == null)
                     virtualNodes = ArrayList()
-                val firstElement = filesToGroup.first()
-
-                if (firstElement is SolutionExplorerModelNode) {
-                    val firstNodeEntity = firstElement.entity;
-                    if (firstNodeEntity != null) {
-                        val virtualFolder = VirtualFolderNode(
-                            firstElement.project,
-                            firstNodeEntity.toReference(),
-                            settings,
-                            rule,
-                            filesToGroup
-                        )
-                        children.removeAll(filesToGroup)
-                        virtualNodes.add(virtualFolder)
-                    }
-                }
+                val virtualFolder = VirtualFolderNode(
+                    project,
+                    filesToGroup,
+                    settings,
+                    VirtualFolderProjectModelEntity(entity, rule),
+                    rule
+                )
+                children.removeAll(filesToGroup)
+                virtualNodes.add(virtualFolder)
             }
         }
 
@@ -238,9 +231,10 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         super.modifyChildren(entity, settings, children)
     }
 
-    private fun getMatchingNodes(rule: HsfHighlightingRule, nodes: MutableList<AbstractTreeNode<*>>): List<AbstractTreeNode<*>> {
-        val filesToGroup = ArrayList<AbstractTreeNode<*>>();
+    private inline fun <reified T : AbstractTreeNode<*>> getMatchingNodes(rule: HsfHighlightingRule, nodes: MutableList<AbstractTreeNode<*>>): List<T> {
+        val filesToGroup = ArrayList<T>();
         for (node in nodes) {
+            if (node !is T) continue;
             val name = node.name ?: continue;
             val match = rule.pattern.matcher(name)
             if (match.matches()) {

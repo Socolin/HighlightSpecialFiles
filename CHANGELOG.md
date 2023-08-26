@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+### 1.4.4
+
+- Virtual folder no longer getting marked as error when a neighbor file is in error
+- Fix Navigate To Explorer / Always Select Opened File with virtual folders
+
 ## 1.4.3
 
 - Fix applying rules on files in attached folder
