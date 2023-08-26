@@ -81,6 +81,8 @@ class RuleComponent(
                                 60
                             )
                             .resizableColumn()
+                        checkBox("Disable")
+                            .bindSelected(ruleModel::isDisabled)
                     }
                 }
                 group("Match") {
@@ -196,7 +198,8 @@ class RuleComponent(
             ruleModel.groupInVirtualFolder,
             ruleModel.folderIconId,
             if (ruleModel.groupInVirtualFolder) ruleModel.folderName else null,
-            ruleModel.isShared
+            ruleModel.isShared,
+            ruleModel.isDisabled
         )
     }
 
@@ -243,6 +246,7 @@ class RuleComponent(
 internal class RuleModel(ruleConfiguration: HsfRuleConfiguration) {
     lateinit var pattern: String
     var isShared: Boolean = false
+    var isDisabled: Boolean = false
     var order: Int = 0
     lateinit var iconId: String
 
@@ -267,6 +271,7 @@ internal class RuleModel(ruleConfiguration: HsfRuleConfiguration) {
     fun updateModel(ruleConfiguration: HsfRuleConfiguration) {
         pattern = ruleConfiguration.pattern
         isShared = ruleConfiguration.isShared
+        isDisabled = ruleConfiguration.isDisabled
         order = ruleConfiguration.order
         iconId = ruleConfiguration.iconId
 

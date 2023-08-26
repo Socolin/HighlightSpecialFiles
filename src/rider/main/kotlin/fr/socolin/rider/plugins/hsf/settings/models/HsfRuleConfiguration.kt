@@ -16,6 +16,7 @@ class HsfRuleConfiguration(
     val folderIconId: String = HsfIconManager.None.id,
     val folderName: String? = null,
     val isShared: Boolean = false,
+    val isDisabled: Boolean = false,
 ) {
     fun isDifferentFrom(other: HsfRuleConfiguration): Boolean {
         return pattern != other.pattern
@@ -29,6 +30,7 @@ class HsfRuleConfiguration(
                 || groupInVirtualFolder != other.groupInVirtualFolder
                 || folderIconId != other.folderIconId
                 || folderName != other.folderName
+                || isDisabled != other.isDisabled
     }
 
     companion object {
@@ -45,6 +47,7 @@ class HsfRuleConfiguration(
                 , source.folderIconId
                 , source.folderName
                 , source.isShared
+                , source.isDisabled
             )
         }
     }

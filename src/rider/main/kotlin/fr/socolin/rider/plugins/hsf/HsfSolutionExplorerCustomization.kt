@@ -15,7 +15,6 @@ import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerVi
 import com.jetbrains.rider.projectView.views.solutionExplorer.nodes.SolutionExplorerFileNode
 import com.jetbrains.rider.projectView.views.solutionExplorer.nodes.SolutionExplorerModelNode
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
-import com.jetbrains.rider.projectView.workspace.toReference
 import fr.socolin.rider.plugins.hsf.actions.OpenPluginSettingsAction
 import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
 import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
@@ -69,6 +68,16 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
     }
 
     private fun updateRule(previousRule: HsfRuleConfiguration, newRule: HsfRuleConfiguration) {
+        if (previousRule.isDisabled && newRule.isDisabled)
+            return;
+        if (previousRule.isDisabled) {
+            addRule(newRule);
+            return;
+        }
+        if (newRule.isDisabled) {
+            removeRule(previousRule);
+            return;
+        }
         val activeRule = createRuleFromConfig(newRule)
         for ((index, rule) in activeRules.withIndex()) {
             if (rule.id == previousRule.id) {
@@ -121,6 +130,8 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
     }
 
     private fun addRule(ruleConfig: HsfRuleConfiguration) {
+        if (ruleConfig.isDisabled)
+            return;
         val activeRule = createRuleFromConfig(ruleConfig)
         activeRules.add(activeRule)
         if (activeRule.priority != null)

@@ -20,9 +20,10 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
             var annotationStyle: String? = null
             var foregroundColorHex: String? = null
             var priority: Int? = null
-            var groupInVirtualFolder: Boolean = false
+            var groupInVirtualFolder = false
             var folderIconId: String = HsfIconManager.None.id
             var folderName: String? = null
+            var disabled = false
 
             for (param in serializedRule.split('&')) {
                 val confArray = param.split('=', limit = 2)
@@ -43,6 +44,7 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
                     "groupInVirtualFolder" -> groupInVirtualFolder = value.toBoolean()
                     "folderIconId" -> folderIconId = URLDecoder.decode(value, Charsets.UTF_8)
                     "folderName" -> folderName = URLDecoder.decode(value, Charsets.UTF_8)
+                    "disabled" -> disabled = value.toBoolean()
                 }
             }
 
@@ -62,7 +64,8 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
                     groupInVirtualFolder,
                     folderIconId,
                     folderName,
-                    shared
+                    shared,
+                    disabled
                 )
             )
         }
@@ -92,6 +95,7 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
                 if (rule.folderName != null)
                     sb.append("&folderName=").append(urlEncode(rule.folderName))
             }
+            sb.append("&disabled=").append(rule.isDisabled)
             sb.append('/')
         }
         if (sb.length > 1)
