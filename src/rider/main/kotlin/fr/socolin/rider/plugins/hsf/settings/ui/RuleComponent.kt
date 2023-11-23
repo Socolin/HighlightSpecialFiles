@@ -5,13 +5,10 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.ui.ColorPanel
-import com.intellij.ui.TitledSeparator
 import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.*
 import com.jetbrains.rd.util.lifetime.Lifetime
-import com.jetbrains.rd.util.reactive.Signal
 import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
 import fr.socolin.rider.plugins.hsf.models.HsfIcon
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
@@ -21,27 +18,17 @@ import fr.socolin.rider.plugins.hsf.settings.ui.renderers.ComboCellWithIconRende
 import icons.CollaborationToolsIcons
 import icons.RiderIcons
 import java.awt.Color
-import java.awt.Container
-import java.awt.GridLayout
 import java.util.*
 import javax.swing.DefaultComboBoxModel
-import javax.swing.JComponent
-import javax.swing.JPanel
 
 class RuleComponent(
     ruleConfiguration: HsfRuleConfiguration,
     hsfIconManager: HsfIconManager,
     lifetime: Lifetime,
-) : JPanel(GridLayout()) {
-    val onDelete = Signal<HsfRuleConfiguration>()
-    val onDuplicate = Signal<HsfRuleConfiguration>()
-    val ruleId = ruleConfiguration.id
+) : RuleComponentBase<HsfRuleConfiguration>(ruleConfiguration) {
     private val panel: DialogPanel
-    private val ruleModel = RuleModel(ruleConfiguration)
+    override val ruleModel = RuleModel(ruleConfiguration)
     private lateinit var patternTextField: Cell<JBTextField>
-
-    val order: Int
-        get() = ruleModel.order
 
     init {
         val deleteAction = object : DumbAwareAction("Delete Rule", "Delete this rule", CollaborationToolsIcons.Delete) {
@@ -49,11 +36,12 @@ class RuleComponent(
                 onDelete.fire(ruleConfiguration)
             }
         }
-        val duplicateAction = object : DumbAwareAction("Duplicate Rule", "Duplicate this rule", RiderIcons.Toolbar.Duplicate) {
-            override fun actionPerformed(e: AnActionEvent) {
-                onDuplicate.fire(ruleConfiguration)
+        val duplicateAction =
+            object : DumbAwareAction("Duplicate Rule", "Duplicate this rule", RiderIcons.Toolbar.Duplicate) {
+                override fun actionPerformed(e: AnActionEvent) {
+                    onDuplicate.fire(ruleConfiguration)
+                }
             }
-        }
         panel = panel {
             collapsibleGroup("Rule: " + ruleModel.pattern) {
                 group("Metadata") {
@@ -184,7 +172,7 @@ class RuleComponent(
         add(panel)
     }
 
-    fun getRule(): HsfRuleConfiguration {
+    override fun getRule(): HsfRuleConfiguration {
         panel.apply()
         return HsfRuleConfiguration(
             ruleId,
@@ -203,52 +191,19 @@ class RuleComponent(
         )
     }
 
-    fun setRule(updatedRule: HsfRuleConfiguration) {
-        ruleModel.updateModel(updatedRule)
+    override fun setRule(updatedRule: HsfRuleConfiguration) {
+        super.setRule(updatedRule)
         panel.reset()
         updateLabelWithPattern(patternTextField.component, ruleModel.pattern)
     }
-
-    companion object {
-        private fun convertColorToHex(c: Color?): String? {
-            if (c == null)
-                return null
-            return "#${c.red.toString(16)}${c.green.toString(16)}${c.blue.toString(16)}"
-        }
-
-        private fun updateLabelWithPattern(component: JComponent, pattern: String) {
-            val label = findRuleLabelInParentOf(component)
-            if (label != null)
-                label.text = "Rule: $pattern"
-        }
-
-        private fun findRuleLabelInParentOf(container: Container?): JBLabel? {
-            if (container == null)
-                return null
-
-            if (container is DialogPanel) {
-                for (component in container.components) {
-                    if (component is TitledSeparator) {
-                        for (child in component.components) {
-                            if (child is JBLabel && child.text.startsWith("Rule: "))
-                                return child
-                        }
-                    }
-                }
-
-            }
-
-            return findRuleLabelInParentOf(container.parent)
-        }
-    }
 }
 
-internal class RuleModel(ruleConfiguration: HsfRuleConfiguration) {
+class RuleModel(ruleConfiguration: HsfRuleConfiguration) : RuleModelBase<HsfRuleConfiguration> {
     lateinit var pattern: String
     var isShared: Boolean = false
     var isDisabled: Boolean = false
-    var order: Int = 0
     lateinit var iconId: String
+    override var order: Int = 0
 
     var usePriority: Boolean = false
     var priority: Int = 0
@@ -268,7 +223,7 @@ internal class RuleModel(ruleConfiguration: HsfRuleConfiguration) {
         updateModel(ruleConfiguration)
     }
 
-    fun updateModel(ruleConfiguration: HsfRuleConfiguration) {
+    override fun updateModel(ruleConfiguration: HsfRuleConfiguration) {
         pattern = ruleConfiguration.pattern
         isShared = ruleConfiguration.isShared
         isDisabled = ruleConfiguration.isDisabled

@@ -8,6 +8,7 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SimpleModificationTracker
 import com.intellij.util.xmlb.XmlSerializerUtil
+import fr.socolin.rider.plugins.hsf.settings.models.HsfNestingRuleConfiguration
 import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 
 // https://plugins.jetbrains.com/docs/intellij/settings-tutorial.html#the-appsettingscomponent-class
@@ -48,6 +49,18 @@ class HsfProjectSettingsStorageService(private val project: Project) :
     }
 
     fun getRulesConfigurations(): List<HsfRuleConfiguration> = state.rules
+
+    fun addNestingRule(ruleConfiguration: HsfNestingRuleConfiguration) {
+        state.nestingRules.add(ruleConfiguration)
+        tracker.incModificationCount();
+    }
+
+    fun removeNestingRule(ruleConfiguration: HsfNestingRuleConfiguration) {
+        state.nestingRules.removeIf { r -> r.id == ruleConfiguration.id }
+        tracker.incModificationCount();
+    }
+
+    fun getNestingRulesConfigurations(): List<HsfNestingRuleConfiguration> = state.nestingRules
 
     companion object {
         fun getInstance(project: Project): HsfProjectSettingsStorageService {

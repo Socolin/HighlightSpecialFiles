@@ -4,9 +4,9 @@ import fr.socolin.rider.plugins.hsf.models.HsfIconManager
 import java.util.UUID
 
 class HsfRuleConfiguration(
-    val id: UUID,
+    override val id: UUID,
     val pattern: String,
-    val order: Int,
+    override val order: Int,
     val iconId: String = HsfIconManager.None.id,
     val priority: Int? = null,
     val annotationText: String? = null,
@@ -15,10 +15,10 @@ class HsfRuleConfiguration(
     val groupInVirtualFolder: Boolean = false,
     val folderIconId: String = HsfIconManager.None.id,
     val folderName: String? = null,
-    val isShared: Boolean = false,
-    val isDisabled: Boolean = false,
-) {
-    fun isDifferentFrom(other: HsfRuleConfiguration): Boolean {
+    override val isShared: Boolean = false,
+    override val isDisabled: Boolean = false,
+) : IHsfRuleConfiguration<HsfRuleConfiguration> {
+    override fun isDifferentFrom(other: HsfRuleConfiguration): Boolean {
         return pattern != other.pattern
                 || iconId != other.iconId
                 || order != other.order

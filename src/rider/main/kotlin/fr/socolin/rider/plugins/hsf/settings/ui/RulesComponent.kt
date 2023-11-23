@@ -10,89 +10,27 @@ import com.jetbrains.rd.util.lifetime.Lifetime
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
 import fr.socolin.rider.plugins.hsf.settings.HsfRuleConfigurationHelper
 import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
+import fr.socolin.rider.plugins.hsf.settings.models.IHsfRuleConfiguration
 import java.util.*
 import javax.swing.JPanel
 import kotlin.collections.HashSet
 
 class RulesComponent(
-    private val project: Project,
-    private val lifetime: Lifetime,
-) {
-    val panel: DialogPanel
-    private var rulesPanel: JPanel = JPanel(VerticalFlowLayout())
-    private val ruleComponents: SortedList<RuleComponent> = SortedList { a, b -> a.order - b.order }
+    project: Project,
+    lifetime: Lifetime,
+) : RulesComponentBase<HsfRuleConfiguration>(project, lifetime) {
+    override val title: String
+        get() = "Rules"
 
-    init {
-        panel = panel {
-            group("Rules") {
-                row {
-                    button("Add Rule") { addNewRule() }
-                }
-                row {
-                    cell(rulesPanel).align(AlignX.FILL)
-                }
-            }
-        }
+    override fun createNewRuleConfiguration(): HsfRuleConfiguration {
+        return HsfRuleConfiguration(UUID.randomUUID(), "^$", 0)
     }
 
-    private fun addNewRule() {
-        addRule(HsfRuleConfiguration(UUID.randomUUID(), "^$", 0))
+    override fun createRuleComponent(rule: HsfRuleConfiguration): RuleComponentBase<HsfRuleConfiguration> {
+        return RuleComponent(rule, HsfIconManager.getInstance(project), lifetime)
     }
 
-    fun setRules(rules: Collection<HsfRuleConfiguration>) {
-        val diffResult = HsfRuleConfigurationHelper.computeDiffBetweenRules(getRules(), rules)
-
-        val removedRuleIds = HashSet(diffResult.removedRules.map { r -> r.id })
-        this.ruleComponents.removeIf { r -> removedRuleIds.contains(r.ruleId) }
-
-        for (addedRule in diffResult.addedRules) {
-            addRule(addedRule)
-        }
-
-        for (updatedRule in diffResult.updatedRules) {
-            val rc = this.ruleComponents.find { r -> r.ruleId == updatedRule.id }
-            rc?.setRule(updatedRule)
-        }
-
-        this.rulesPanel.removeAll()
-        for (ruleComponent in this.ruleComponents) {
-            this.rulesPanel.add(ruleComponent)
-        }
+    override fun createRuleConfigurationFrom(duplicatedRule: HsfRuleConfiguration): HsfRuleConfiguration {
+        return HsfRuleConfiguration.createFrom(duplicatedRule)
     }
-
-    fun getRules(): List<HsfRuleConfiguration> {
-        return ruleComponents.map { c -> c.getRule() }
-    }
-
-    private fun addRule(rule: HsfRuleConfiguration) {
-        val ruleComponent = RuleComponent(rule, HsfIconManager.getInstance(project), lifetime)
-        this.rulesPanel.add(ruleComponent)
-        ruleComponents.add(ruleComponent)
-
-        ruleComponent.onDelete.advise(lifetime) { deletedRule ->
-            run {
-                val rc = this.rulesPanel.components.find { c -> (c as RuleComponent).ruleId == deletedRule.id }
-                this.rulesPanel.remove(rc)
-                ruleComponents.remove(rc)
-                rulesPanel.revalidate()
-            }
-        }
-
-        ruleComponent.onDuplicate.advise(lifetime) { duplicatedRule ->
-            run {
-                val newRuleConfiguration = HsfRuleConfiguration.createFrom(duplicatedRule)
-                val newRuleComponent = RuleComponent(newRuleConfiguration, HsfIconManager.getInstance(project), lifetime)
-                val index = this.rulesPanel.components.indexOfFirst { c -> (c as RuleComponent).ruleId == duplicatedRule.id }
-                if (index != -1)
-                    this.rulesPanel.add(newRuleComponent, index + 1)
-                else
-                    this.rulesPanel.add(newRuleComponent)
-                ruleComponents.add(newRuleComponent)
-                rulesPanel.revalidate()
-            }
-        }
-
-        rulesPanel.revalidate()
-    }
-
 }

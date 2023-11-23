@@ -10,16 +10,15 @@ import fr.socolin.rider.plugins.hsf.helpers.HsfColorHelper
 import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
 import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
-import fr.socolin.rider.plugins.hsf.settings.HsfConfigurationManager
+import fr.socolin.rider.plugins.hsf.settings.HsfRuleConfigurationManager
 import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
-import java.awt.Color
 import java.util.regex.Pattern
 
 @Service(Service.Level.PROJECT)
 class HsfActiveRuleManager(project: Project) {
 
     private val hsfIconManager: HsfIconManager = HsfIconManager.getInstance(project)
-    private val rulesConfigurationManager: HsfConfigurationManager = HsfConfigurationManager.getInstance(project)
+    private val rulesConfigurationManager: HsfRuleConfigurationManager = HsfRuleConfigurationManager.getInstance(project)
 
     val rules : List<HsfHighlightingRule> get() {
         return activeRules;

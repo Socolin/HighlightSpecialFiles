@@ -24,6 +24,7 @@ Add new tool to easily create rules to enhance how the files are show in Solutio
 
     <extensions defaultExtensionNs="com.intellij">
         <solutionExplorerCustomization implementation="fr.socolin.rider.plugins.hsf.HsfSolutionExplorerCustomization"/>
+        <solutionExplorerCustomization implementation="fr.socolin.rider.plugins.hsf.HsfSolutionExplorerNestingCustomization"/>
         <projectConfigurable
                 parentId="appearance"
                 instance="fr.socolin.rider.plugins.hsf.settings.HsfSettingsConfigurable"

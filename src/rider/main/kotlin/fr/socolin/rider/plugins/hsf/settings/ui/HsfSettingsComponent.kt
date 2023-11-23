@@ -9,6 +9,7 @@ import com.intellij.util.io.systemIndependentPath
 import com.jetbrains.rd.util.lifetime.Lifetime
 import com.jetbrains.rider.projectView.solutionDirectoryPath
 import fr.socolin.rider.plugins.hsf.models.HsfIconManager
+import fr.socolin.rider.plugins.hsf.settings.models.HsfNestingRuleConfiguration
 import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import java.nio.file.LinkOption
 import javax.swing.JPanel
@@ -21,6 +22,7 @@ class HsfSettingsComponent(
     lifetime: Lifetime
 ) {
     private val rulesComponent = RulesComponent(project, lifetime)
+    private val nestingRulesComponent = NestingRulesComponent(project, lifetime)
     private val hsfIconManager = HsfIconManager.getInstance(project)
 
     fun getPanel(): JPanel {
@@ -45,6 +47,9 @@ class HsfSettingsComponent(
             row {
                 cell(rulesComponent.panel).align(AlignX.FILL)
             }
+            row {
+                cell(nestingRulesComponent.panel).align(AlignX.FILL)
+            }
         }
     }
 
@@ -54,5 +59,13 @@ class HsfSettingsComponent(
 
     fun getRules(): List<HsfRuleConfiguration> {
         return rulesComponent.getRules()
+    }
+
+    fun setNestingRules(rules: Collection<HsfNestingRuleConfiguration>) {
+        nestingRulesComponent.setRules(rules)
+    }
+
+    fun getNestingRules(): List<HsfNestingRuleConfiguration> {
+        return nestingRulesComponent.getRules()
     }
 }

@@ -6,11 +6,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.ui.icons.CachedImageIcon
-import com.intellij.ui.scale.ScaleContext
-import com.intellij.ui.scale.UserScaleContext
 import com.intellij.util.io.systemIndependentPath
-import com.intellij.util.ui.JBUI
 import com.jetbrains.rd.util.reactive.Signal
 import icons.RiderIcons
 import java.net.URL
@@ -39,7 +35,7 @@ class HsfIconManager(private val project: Project) {
             val iconFiles = iconFolder.listDirectoryEntries("*.*")
             for (iconFile in iconFiles) {
                 if (iconFile.fileName.nameWithoutExtension.endsWith("_dark"))
-                    continue;
+                    continue
                 addProjectIcon(iconFile)
             }
         }
@@ -90,7 +86,7 @@ class HsfIconManager(private val project: Project) {
         addBuiltInIcon("RunConfigurations.TestError", AllIcons.RunConfigurations.TestError)
         addBuiltInIcon("RunConfigurations.TestFailed", AllIcons.RunConfigurations.TestFailed)
         addBuiltInIcon("Nodes.AbstractException", AllIcons.Nodes.AbstractException)
-        addBuiltInIcon("Nodes.Annotationtype", AllIcons.Nodes.Annotationtype)
+        addBuiltInIcon("Nodes.AnnotationType", AllIcons.Nodes.Annotationtype)
         addBuiltInIcon("Nodes.Class", AllIcons.Nodes.Class)
         addBuiltInIcon("Nodes.ExceptionClass", AllIcons.Nodes.ExceptionClass)
         addBuiltInIcon("Nodes.Function", AllIcons.Nodes.Function)
@@ -123,11 +119,11 @@ class HsfIconManager(private val project: Project) {
     private fun loadIconFromDisk(iconFile: Path): Icon? {
         try {
             val filePathUrl = if (SystemInfo.isWindows) "file:/" + iconFile.systemIndependentPath else "file://" + iconFile.systemIndependentPath
-            return IconLoader.findIcon(URL(filePathUrl));
+            return IconLoader.findIcon(URL(filePathUrl))
         } catch (e: Exception) {
             logger.error("Failed to load project icon $iconFile", e)
         }
-        return null;
+        return null
     }
 
     private fun addIcon(hsfIcon: HsfIcon) {
