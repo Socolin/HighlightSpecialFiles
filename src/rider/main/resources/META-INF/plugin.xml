@@ -10,6 +10,7 @@
 Add new tool to easily create rules to enhance how the files are show in Solution Explorer of Rider.
 
 <ul>
+    <li>Add more advance nesting rules.</li>
     <li>Create virtual folders to regroup related files together.</li>
     <li>Change the order of files for quick access.</li>
     <li>Customize file icons for better visual recognition.</li>
