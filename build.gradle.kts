@@ -4,7 +4,7 @@ version = properties("PluginVersion")
 
 plugins {
     kotlin("jvm") version "1.8.22"
-    id("org.jetbrains.intellij") version "1.13.3" // https://github.com/JetBrains/gradle-intellij-plugin/releases
+    id("org.jetbrains.intellij") version "1.16.1" // https://github.com/JetBrains/gradle-intellij-plugin/releases
     id("com.jetbrains.rdgen") version "2023.3.2"
 }
 
@@ -30,7 +30,7 @@ val rdLibDirectory: () -> File = { file("${tasks.setupDependencies.get().idea.ge
 
 tasks {
     wrapper {
-        gradleVersion = "7.4.2"
+        gradleVersion = "8.4"
         distributionType = Wrapper.DistributionType.ALL
         distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
     }
