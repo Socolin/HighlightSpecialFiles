@@ -3,9 +3,9 @@ fun properties(key: String) = project.findProperty(key).toString()
 version = properties("PluginVersion")
 
 plugins {
-    kotlin("jvm") version "1.8.22"
-    id("org.jetbrains.intellij") version "1.16.1" // https://github.com/JetBrains/gradle-intellij-plugin/releases
-    id("com.jetbrains.rdgen") version "2023.3.2"
+    kotlin("jvm") version "1.9.23"
+    id("org.jetbrains.intellij") version "1.17.2" // https://github.com/JetBrains/gradle-intellij-plugin/releases
+    id("com.jetbrains.rdgen") version "2024.1.1" // https://github.com/JetBrains/rd/releases
 }
 
 repositories {
