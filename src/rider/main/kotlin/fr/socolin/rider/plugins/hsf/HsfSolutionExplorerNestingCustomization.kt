@@ -3,17 +3,13 @@ package fr.socolin.rider.plugins.hsf
 import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.workspace.storage.EntityReference
-import com.jetbrains.rider.model.RdProjectModelItemDescriptor
 import com.jetbrains.rider.projectView.views.NestingNode
-import com.jetbrains.rider.projectView.views.SolutionViewNode
 import com.jetbrains.rider.projectView.views.getVirtualFile
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerCustomization
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewSettings
 import com.jetbrains.rider.projectView.views.solutionExplorer.nodes.SolutionExplorerFileNode
 import com.jetbrains.rider.projectView.views.solutionExplorer.nodes.SolutionExplorerModelNode
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
-import com.jetbrains.rider.projectView.workspace.ProjectModelEntityReference
 import fr.socolin.rider.plugins.hsf.models.HsfNestingRule
 import fr.socolin.rider.plugins.hsf.virtual_folder.node.SolutionExplorerModelNodeWithNesting
 
@@ -26,9 +22,9 @@ class HsfSolutionExplorerNestingCustomization(project: Project) : SolutionExplor
         settings: SolutionExplorerViewSettings,
         children: MutableList<AbstractTreeNode<*>>
     ) {
-        var virtualNodes: ArrayList<AbstractTreeNode<*>>? = null;
+        var virtualNodes: ArrayList<AbstractTreeNode<*>>? = null
         for (rule in hsfActiveNestingRuleManager.rules) {
-            val filesToGroup = getMatchingNodes<AbstractTreeNode<*>>(rule, children);
+            val filesToGroup = getMatchingNodes<AbstractTreeNode<*>>(rule, children)
 
             for ((key, files) in filesToGroup) {
                 val parentMatchingNodes = ArrayList<MatchingNodes<AbstractTreeNode<*>>>()
@@ -41,19 +37,19 @@ class HsfSolutionExplorerNestingCustomization(project: Project) : SolutionExplor
                     }
                 }
                 if (parentMatchingNodes.count() == 1 && childrenMatchingNodes.isNotEmpty()) {
-                    val parentNode = parentMatchingNodes[0].node;
+                    val parentNode = parentMatchingNodes[0].node
                     val childrenNodes = childrenMatchingNodes.map { i -> i.node }
-                    val parentVirtualFile = parentNode.getVirtualFile();
+                    val parentVirtualFile = parentNode.getVirtualFile()
                     if (parentNode is SolutionExplorerModelNode && parentVirtualFile != null) {
-                        val nestedNodes = ArrayList<AbstractTreeNode<*>>(childrenNodes.size);
+                        val nestedNodes = ArrayList<AbstractTreeNode<*>>(childrenNodes.size)
                         children.remove(parentNode)
                         for (childrenNode in childrenNodes) {
                             children.remove(childrenNode)
-                            nestedNodes.add(childrenNode as AbstractTreeNode<*>)
+                            nestedNodes.add(childrenNode)
                         }
                         if (virtualNodes == null)
-                            virtualNodes = ArrayList();
-                        val nameAmbiguity = false; // FIXME: No way to get this from the parentNode
+                            virtualNodes = ArrayList()
+                        val nameAmbiguity = false // FIXME: No way to get this from the parentNode
                         virtualNodes.add(
                             SolutionExplorerModelNodeWithNesting(project, parentNode.entityReference, parentNode.settings, nameAmbiguity, nestedNodes)
                         )
@@ -72,9 +68,9 @@ class HsfSolutionExplorerNestingCustomization(project: Project) : SolutionExplor
         children: MutableList<AbstractTreeNode<*>>
     ) {
 
-        var virtualNodes: ArrayList<AbstractTreeNode<*>>? = null;
+        var virtualNodes: ArrayList<AbstractTreeNode<*>>? = null
         for (rule in hsfActiveNestingRuleManager.rules) {
-            val filesToGroup = getMatchingNodes<AbstractTreeNode<*>>(rule, children);
+            val filesToGroup = getMatchingNodes<AbstractTreeNode<*>>(rule, children)
 
             for ((key, files) in filesToGroup) {
                 val parentMatchingNodes = ArrayList<MatchingNodes<AbstractTreeNode<*>>>()
@@ -87,21 +83,21 @@ class HsfSolutionExplorerNestingCustomization(project: Project) : SolutionExplor
                     }
                 }
                 if (parentMatchingNodes.count() == 1 && childrenMatchingNodes.isNotEmpty()) {
-                    val parentNode = parentMatchingNodes[0].node;
+                    val parentNode = parentMatchingNodes[0].node
                     val childrenNodes = childrenMatchingNodes.map { i -> i.node }
                     if (parentNode is SolutionExplorerFileNode) {
-                        val nestedNodes = ArrayList<NestingNode<VirtualFile>>(childrenNodes.size);
+                        val nestedNodes = ArrayList<NestingNode<VirtualFile>>(childrenNodes.size)
                         nestedNodes.addAll(parentNode.nestedNodes)
                         for (childrenNode in childrenNodes) {
                             children.remove(childrenNode)
-                            val virtualFile = childrenNode.getVirtualFile();
-                            if (virtualFile != null) {
-                                nestedNodes.add(NestingNode(childrenNode.name ?: virtualFile.name, virtualFile))
+                            val vf = childrenNode.getVirtualFile()
+                            if (vf != null) {
+                                nestedNodes.add(NestingNode(childrenNode.name ?: vf.name, vf))
                             }
                         }
                         children.remove(parentNode)
                         if (virtualNodes == null)
-                            virtualNodes = ArrayList();
+                            virtualNodes = ArrayList()
                         virtualNodes.add(
                             SolutionExplorerFileNode(project, parentNode.virtualFile, nestedNodes, parentNode.settings, parentNode.isRoot, parentNode.isAttachedFolder)
                         )
@@ -119,13 +115,13 @@ class HsfSolutionExplorerNestingCustomization(project: Project) : SolutionExplor
         rule: HsfNestingRule,
         nodes: MutableList<AbstractTreeNode<*>>
     ): HashMap<String, ArrayList<MatchingNodes<T>>> {
-        val filesToGroup = HashMap<String, ArrayList<MatchingNodes<T>>>();
+        val filesToGroup = HashMap<String, ArrayList<MatchingNodes<T>>>()
         for (node in nodes) {
-            if (node !is T) continue;
-            val name = node.name ?: continue;
+            if (node !is T) continue
+            val name = node.name ?: continue
             val match = rule.pattern.matcher(name)
             if (match.matches()) {
-                val groupBy = match.group("groupBy") ?: continue;
+                val groupBy = match.group("groupBy") ?: continue
                 val childPart = match.group("childPart")
 
                 val matchedNodes = filesToGroup.getOrPut(groupBy) { ArrayList() }
@@ -133,7 +129,7 @@ class HsfSolutionExplorerNestingCustomization(project: Project) : SolutionExplor
             }
         }
 
-        return filesToGroup;
+        return filesToGroup
     }
 }
 

@@ -3,7 +3,7 @@ package fr.socolin.rider.plugins.hsf
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.util.containers.SortedList
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rider.projectView.ProjectModelViewUpdater
 import fr.socolin.rider.plugins.hsf.models.HsfNestingRule
 import fr.socolin.rider.plugins.hsf.settings.HsfNestingRuleConfigurationManager

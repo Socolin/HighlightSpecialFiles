@@ -4,7 +4,7 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.util.containers.SortedList
-import com.jetbrains.rd.platform.util.lifetime
+import com.intellij.openapi.rd.util.lifetime
 import com.jetbrains.rider.projectView.ProjectModelViewUpdater
 import fr.socolin.rider.plugins.hsf.helpers.HsfColorHelper
 import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
