@@ -63,7 +63,7 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
             if (!rule.groupInVirtualFolder) continue;
 
             val filesToGroup = getMatchingNodes<AbstractTreeNode<*>>(rule, children);
-            if (filesToGroup.isNotEmpty()) {
+            if (filesToGroup.count() >= rule.filesCountBeforeCreatingVirtualFolder) {
                 if (virtualNodes == null)
                     virtualNodes = ArrayList()
                 val firstElement = filesToGroup.first()
@@ -96,7 +96,7 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
             if (!rule.groupInVirtualFolder) continue;
 
             val filesToGroup = getMatchingNodes<SolutionExplorerModelNode>(rule, children);
-            if (filesToGroup.isNotEmpty()) {
+            if (filesToGroup.count() >= rule.filesCountBeforeCreatingVirtualFolder) {
                 if (virtualNodes == null)
                     virtualNodes = ArrayList()
                 val virtualFolder = VirtualFolderNode(

@@ -23,6 +23,7 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
             var groupInVirtualFolder = false
             var folderIconId: String = HsfIconManager.None.id
             var folderName: String? = null
+            var filesCountBeforeCreatingVirtualFolder: Int = 0
             var disabled = false
 
             for (param in serializedRule.split('&')) {
@@ -45,6 +46,7 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
                     "folderIconId" -> folderIconId = URLDecoder.decode(value, Charsets.UTF_8)
                     "folderName" -> folderName = URLDecoder.decode(value, Charsets.UTF_8)
                     "disabled" -> disabled = value.toBoolean()
+                    "filesCountBeforeCreatingVirtualFolder" -> filesCountBeforeCreatingVirtualFolder = value.toInt()
                 }
             }
 
@@ -64,6 +66,7 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
                     groupInVirtualFolder,
                     folderIconId,
                     folderName,
+                    filesCountBeforeCreatingVirtualFolder,
                     shared,
                     disabled
                 )
@@ -94,6 +97,8 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
                 sb.append("&folderIconId=").append(urlEncode(rule.folderIconId))
                 if (rule.folderName != null)
                     sb.append("&folderName=").append(urlEncode(rule.folderName))
+                if (rule.filesCountBeforeCreatingVirtualFolder != null)
+                    sb.append("&filesCountBeforeCreatingVirtualFolder=").append(rule.filesCountBeforeCreatingVirtualFolder)
             }
             sb.append("&disabled=").append(rule.isDisabled)
             sb.append('/')

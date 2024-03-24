@@ -164,6 +164,12 @@ class RuleComponent(
                             textField()
                                 .bindText(ruleModel::folderName)
                         }
+
+                        row {
+                            label("Number of files before creating folder")
+                            textField()
+                                .bindIntText(ruleModel::filesCountBeforeCreatingVirtualFolder)
+                        }
                     }.visibleIf(groupInVirtualFolderCheckbox.selected)
                 }
             }
@@ -186,6 +192,7 @@ class RuleComponent(
             ruleModel.groupInVirtualFolder,
             ruleModel.folderIconId,
             if (ruleModel.groupInVirtualFolder) ruleModel.folderName else null,
+            ruleModel.filesCountBeforeCreatingVirtualFolder,
             ruleModel.isShared,
             ruleModel.isDisabled
         )
@@ -218,6 +225,7 @@ class RuleModel(ruleConfiguration: HsfRuleConfiguration) : RuleModelBase<HsfRule
     var groupInVirtualFolder: Boolean = false
     lateinit var folderIconId: String
     lateinit var folderName: String
+    var filesCountBeforeCreatingVirtualFolder: Int = 0
 
     init {
         updateModel(ruleConfiguration)
@@ -243,6 +251,7 @@ class RuleModel(ruleConfiguration: HsfRuleConfiguration) : RuleModelBase<HsfRule
         groupInVirtualFolder = ruleConfiguration.groupInVirtualFolder
         folderIconId = if (ruleConfiguration.groupInVirtualFolder) ruleConfiguration.folderIconId else HsfIconManager.None.id
         folderName = if (ruleConfiguration.groupInVirtualFolder) ruleConfiguration.folderName ?: "" else ""
+        filesCountBeforeCreatingVirtualFolder = ruleConfiguration.filesCountBeforeCreatingVirtualFolder ?: 1
     }
 
 }

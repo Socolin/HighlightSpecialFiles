@@ -140,7 +140,8 @@ class HsfActiveRuleManager(project: Project) {
         HsfColorHelper.colorFromHex(ruleConfig.foregroundColorHex),
         ruleConfig.groupInVirtualFolder,
         hsfIconManager.getIcon(ruleConfig.folderIconId),
-        ruleConfig.folderName
+        ruleConfig.folderName,
+        ruleConfig.filesCountBeforeCreatingVirtualFolder ?: 1,
     )
 
     companion object {

@@ -15,6 +15,7 @@ class HsfRuleConfiguration(
     val groupInVirtualFolder: Boolean = false,
     val folderIconId: String = HsfIconManager.None.id,
     val folderName: String? = null,
+    val filesCountBeforeCreatingVirtualFolder: Int? = null,
     override val isShared: Boolean = false,
     override val isDisabled: Boolean = false,
 ) : IHsfRuleConfiguration<HsfRuleConfiguration> {
@@ -30,6 +31,7 @@ class HsfRuleConfiguration(
                 || groupInVirtualFolder != other.groupInVirtualFolder
                 || folderIconId != other.folderIconId
                 || folderName != other.folderName
+                || filesCountBeforeCreatingVirtualFolder != other.filesCountBeforeCreatingVirtualFolder
                 || isDisabled != other.isDisabled
     }
 
@@ -46,6 +48,7 @@ class HsfRuleConfiguration(
                 , source.groupInVirtualFolder
                 , source.folderIconId
                 , source.folderName
+                , source.filesCountBeforeCreatingVirtualFolder
                 , source.isShared
                 , source.isDisabled
             )

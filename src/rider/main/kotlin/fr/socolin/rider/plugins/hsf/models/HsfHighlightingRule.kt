@@ -17,5 +17,6 @@ class HsfHighlightingRule(
     val groupInVirtualFolder: Boolean,
     val virtualFolderIcon: HsfIcon,
     val virtualFolderName: String?,
+    val filesCountBeforeCreatingVirtualFolder: Int,
 ) {
 }
