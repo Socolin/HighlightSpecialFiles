@@ -14,15 +14,16 @@ import com.jetbrains.rider.projectView.views.solutionExplorer.nodes.SolutionExpl
 import com.jetbrains.rider.projectView.workspace.*
 import com.jetbrains.rider.projectView.workspace.impl.WorkspaceEntityErrorsSupport
 import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
+import java.util.UUID
 
 class VirtualFolderNode(
     project: Project,
-    filesToGroup: List<SolutionExplorerModelNode>,
+    private val nodesToGroup: List<SolutionExplorerModelNode>,
     val settings: SolutionExplorerViewSettings,
     private val parentEntity: VirtualFolderProjectModelEntity,
-    private val rule: HsfHighlightingRule,
+    val rule: HsfHighlightingRule,
 ) :
-    SolutionViewNode<List<SolutionExplorerModelNode>>(project, filesToGroup), ClickableNode, SolutionViewEntityOwner {
+    SolutionViewNode<UUID>(project, rule.id), ClickableNode, SolutionViewEntityOwner {
 
     override val entity: ProjectModelEntity
         get() {
@@ -35,7 +36,7 @@ class VirtualFolderNode(
         }
 
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
-        return ArrayList(value)
+        return ArrayList(nodesToGroup)
     }
 
     override fun update(presentation: PresentationData) {
@@ -49,9 +50,9 @@ class VirtualFolderNode(
 
     override fun hasProblemFileBeneath(): Boolean {
         if (!Registry.`is`("projectView.showHierarchyErrors"))
-            return false;
+            return false
 
-        for (abstractTreeNode in value) {
+        for (abstractTreeNode in nodesToGroup) {
             val entity = abstractTreeNode.entityReference.getEntity(project)
             if (entity != null)
                 if (WorkspaceEntityErrorsSupport.getInstance(myProject).hasErrors(entity))
@@ -78,7 +79,7 @@ class VirtualFolderNode(
     override fun getVirtualFile() = null
 
     override fun contains(file: VirtualFile): Boolean {
-        for (node in this.value) {
+        for (node in this.nodesToGroup) {
             val nodeVirtualFile = node.entity?.getVirtualFileAsContentRoot();
             if (nodeVirtualFile != null) {
                 if (file.path === nodeVirtualFile.path)
