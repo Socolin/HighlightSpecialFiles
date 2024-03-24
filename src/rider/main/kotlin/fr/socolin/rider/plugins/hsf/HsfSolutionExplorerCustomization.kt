@@ -104,7 +104,7 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
                     filesToGroup,
                     settings,
                     VirtualFolderProjectModelEntity(entity, rule),
-                    rule
+                    rule,
                 )
                 children.removeAll(filesToGroup)
                 virtualNodes.add(virtualFolder)

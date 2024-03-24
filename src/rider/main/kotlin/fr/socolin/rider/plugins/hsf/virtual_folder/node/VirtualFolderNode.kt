@@ -11,10 +11,13 @@ import com.intellij.ui.SimpleTextAttributes
 import com.jetbrains.rider.projectView.views.*
 import com.jetbrains.rider.projectView.views.solutionExplorer.SolutionExplorerViewSettings
 import com.jetbrains.rider.projectView.views.solutionExplorer.nodes.SolutionExplorerModelNode
-import com.jetbrains.rider.projectView.workspace.*
+import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
+import com.jetbrains.rider.projectView.workspace.ProjectModelEntityReference
+import com.jetbrains.rider.projectView.workspace.getVirtualFileAsContentRoot
 import com.jetbrains.rider.projectView.workspace.impl.WorkspaceEntityErrorsSupport
+import com.jetbrains.rider.projectView.workspace.toReference
 import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
-import java.util.UUID
+import java.util.*
 
 class VirtualFolderNode(
     project: Project,
@@ -22,16 +25,15 @@ class VirtualFolderNode(
     val settings: SolutionExplorerViewSettings,
     private val parentEntity: VirtualFolderProjectModelEntity,
     val rule: HsfHighlightingRule,
-) :
-    SolutionViewNode<UUID>(project, rule.id), ClickableNode, SolutionViewEntityOwner {
+) : SolutionViewNode<UUID>(project, rule.id), ClickableNode, SolutionViewEntityOwner {
 
     override val entity: ProjectModelEntity
         get() {
-            return parentEntity;
+            return parentEntity
         }
 
     override val entityReference: ProjectModelEntityReference
-        get () {
+        get() {
             return parentEntity.toReference()
         }
 
@@ -42,10 +44,6 @@ class VirtualFolderNode(
     override fun update(presentation: PresentationData) {
         presentation.setIcon(rule.virtualFolderIcon.icon ?: AllIcons.Nodes.Folder)
         presentation.addText(rule.virtualFolderName ?: "<No title>", SimpleTextAttributes.REGULAR_ATTRIBUTES)
-
-        virtualFile?.let {
-            presentation.addNonIndexedMark(myProject, it)
-        }
     }
 
     override fun hasProblemFileBeneath(): Boolean {
@@ -58,7 +56,7 @@ class VirtualFolderNode(
                 if (WorkspaceEntityErrorsSupport.getInstance(myProject).hasErrors(entity))
                     return true
         }
-        return false;
+        return false
     }
 
     override fun navigate(requestFocus: Boolean) {
@@ -80,18 +78,18 @@ class VirtualFolderNode(
 
     override fun contains(file: VirtualFile): Boolean {
         for (node in this.nodesToGroup) {
-            val nodeVirtualFile = node.entity?.getVirtualFileAsContentRoot();
+            val nodeVirtualFile = node.entity?.getVirtualFileAsContentRoot()
             if (nodeVirtualFile != null) {
                 if (file.path === nodeVirtualFile.path)
-                    return true;
+                    return true
                 if (VfsUtil.isAncestor(nodeVirtualFile, file, false))
-                    return true;
+                    return true
             }
         }
-        return false;
+        return false
     }
 
-    override fun getBackgroundColor() = null;
+    override fun getBackgroundColor() = null
 
     override fun getName(): String = rule.virtualFolderName ?: "INVALID"
 
