@@ -1,11 +1,10 @@
 package fr.socolin.rider.plugins.hsf.virtual_folder.node
 
-import com.intellij.platform.workspace.storage.EntityReference
+import com.intellij.platform.workspace.storage.EntityPointer
 import com.intellij.platform.workspace.storage.EntitySource
 import com.intellij.platform.workspace.storage.WorkspaceEntity
 import com.intellij.platform.workspace.storage.url.VirtualFileUrl
 import com.jetbrains.rider.model.RdProjectModelItemDescriptor
-import com.jetbrains.rider.projectView.views.solutionExplorer.nodes.SolutionExplorerModelNode
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
 
@@ -26,8 +25,8 @@ class VirtualFolderProjectModelEntity(
     override val url: VirtualFileUrl?
         get() = null
 
-    override fun <E : WorkspaceEntity> createReference(): EntityReference<E> {
-        return parentModelEntity.createReference()
+    override fun <E : WorkspaceEntity> createPointer(): EntityPointer<E> {
+        return parentModelEntity.createPointer();
     }
 
     override fun getEntityInterface(): Class<out WorkspaceEntity> {
