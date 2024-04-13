@@ -25,7 +25,8 @@ class VirtualFolderNode(
     val settings: SolutionExplorerViewSettings,
     private val parentEntity: VirtualFolderProjectModelEntity,
     val rule: HsfHighlightingRule,
-) : SolutionViewNode<UUID>(project, rule.id), ClickableNode, SolutionViewEntityOwner {
+    val id: String,
+) : SolutionViewNode<String>(project, id), ClickableNode, SolutionViewEntityOwner {
 
     override val entity: ProjectModelEntity
         get() {

@@ -5,6 +5,7 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.workspace.storage.impl.WorkspaceEntityBase
 import com.jetbrains.rider.model.RdDependencyFolderDescriptor
 import com.jetbrains.rider.model.RdProjectFolderDescriptor
 import com.jetbrains.rider.model.RdProjectModelItemDescriptor
@@ -107,6 +108,7 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
                     settings,
                     VirtualFolderProjectModelEntity(entity, rule),
                     rule,
+                    rule.id.toString() + "-" + entity.toString() // The entity.toString include the unique id
                 )
                 children.removeAll(filesToGroup)
                 virtualNodes.add(virtualFolder)
