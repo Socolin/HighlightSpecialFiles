@@ -1,22 +1,12 @@
-# Build artifacts
-[Bb]in/
-[Oo]bj/
-build
-output
-.gradle
-.tmp
+/.idea/
+/.gradle/
+/.intellijPlatform/
 
-# User-specific files
-*.suo
-*.user
-*.sln.docstates
-*.cache
+bin/
+obj/
+build/
 
-# IDEs
-/.idea/*.iml
-/.idea/*.xml
-/.idea/.idea.*/*.iml
-/.idea/.idea.*/.idea/*.xml
-.vs
-_ReSharper*
-_dotTrace*
+/src/rider/generated/**/*.Generated.kt
+/src/dotnet/Rider.Plugins.PluginTemplate/Model/**/*.Generated.cs
+
+/src/dotnet/nuget.config
