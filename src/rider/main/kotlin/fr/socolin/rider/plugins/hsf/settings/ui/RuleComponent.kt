@@ -1,6 +1,6 @@
 package fr.socolin.rider.plugins.hsf.settings.ui
 
-import com.intellij.icons.ExpUiIcons
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.ComboBox
@@ -9,7 +9,6 @@ import com.intellij.ui.ColorPanel
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.*
-import com.intellij.ui.dsl.gridLayout.UnscaledGaps
 import com.jetbrains.rd.util.lifetime.Lifetime
 import fr.socolin.rider.plugins.hsf.models.HsfAnnotationTextStyles
 import fr.socolin.rider.plugins.hsf.models.HsfIcon
@@ -57,12 +56,12 @@ class RuleComponent(
                         intTextField()
                             .label("Order")
                             .bindIntText(ruleModel::order);
-                        icon(ExpUiIcons.Status.InfoOutline).applyToComponent {
+                        icon(AllIcons.General.ShowInfos).applyToComponent {
                             toolTipText = "When multiple rules match a same file, the one with the larger value is applied the latest"
                         }
                         checkBox("Shared")
                             .bindSelected(ruleModel::isShared)
-                        icon(ExpUiIcons.Status.InfoOutline).applyToComponent {
+                        icon(AllIcons.General.ShowInfos).applyToComponent {
                             toolTipText = "Define where this rule is saved. When shared a rule is saved in .project.xml otherwise it's in .user.xml"
                         }
                         label("")
@@ -79,7 +78,7 @@ class RuleComponent(
                             .whenTextChangedFromUi { pattern ->
                                 updateLabelWithPattern(patternTextField.component, pattern)
                             }
-                        icon(ExpUiIcons.Status.InfoOutline).applyToComponent {
+                        icon(AllIcons.General.ShowInfos).applyToComponent {
                             toolTipText = "A regex used to match on the filename (does not include the path)"
                         }
                     }
@@ -104,7 +103,7 @@ class RuleComponent(
                         intTextField()
                             .bindIntText(ruleModel::priority)
                             .visibleIf(usePriorityCheckbox.selected)
-                        icon(ExpUiIcons.Status.InfoOutline).applyToComponent {
+                        icon(AllIcons.General.ShowInfos).applyToComponent {
                             toolTipText = "A file with highest value will be sorted first.<br>File default: 0, Folder default: 1000"
                         }.visibleIf(usePriorityCheckbox.selected)
                     }
