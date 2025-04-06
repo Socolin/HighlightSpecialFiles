@@ -50,9 +50,19 @@ class HsfSolutionExplorerNestingCustomization(project: Project) : SolutionExplor
                         if (virtualNodes == null)
                             virtualNodes = ArrayList()
                         val nameAmbiguity = false // FIXME: No way to get this from the parentNode
-                        virtualNodes.add(
-                            SolutionExplorerModelNodeWithNesting(project, parentNode.entityReference, parentNode.settings, nameAmbiguity, nestedNodes)
+                        val nestingNode = SolutionExplorerModelNodeWithNesting(
+                            project,
+                            parentNode.entityReference,
+                            parentNode.settings,
+                            nameAmbiguity,
+                            nestedNodes
                         )
+                        virtualNodes.add(
+                            nestingNode
+                        )
+                        for (nestedNode in nestedNodes) {
+                            nestedNode.parent = nestingNode
+                        }
                     }
                 }
             }

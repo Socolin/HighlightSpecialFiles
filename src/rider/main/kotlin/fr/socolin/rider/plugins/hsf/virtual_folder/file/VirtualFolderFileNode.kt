@@ -6,6 +6,7 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.SimpleTextAttributes
+import com.jetbrains.rider.projectView.views.SolutionViewCustomEntityContainer
 import com.jetbrains.rider.projectView.views.SolutionViewNode
 import com.jetbrains.rider.projectView.views.getVirtualFile
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntityReference
@@ -17,7 +18,7 @@ class VirtualFolderFileNode(
     private val rule: HsfHighlightingRule,
     private val filesToGroup: List<AbstractTreeNode<*>>,
     private val virtualFile: VirtualFile,
-) : SolutionViewNode<String>(project, value) {
+) : SolutionViewNode<String>(project, value), SolutionViewCustomEntityContainer {
     override fun update(presentation: PresentationData) {
         presentation.setIcon(rule.virtualFolderIcon.icon ?: AllIcons.Nodes.Folder)
         presentation.addText(rule.virtualFolderName ?: "<No title>", SimpleTextAttributes.REGULAR_ATTRIBUTES)
@@ -29,6 +30,11 @@ class VirtualFolderFileNode(
 
     override fun contains(file: VirtualFile): Boolean {
         return filesToGroup.any { f -> f.getVirtualFile() == file };
+    }
+
+    override fun contains(entity: ProjectModelEntityReference): Boolean {
+        val entityVirtualUrl = entity.getEntity(project)?.url ?: return false;
+        return filesToGroup.any { f -> f.getVirtualFile() == entityVirtualUrl };
     }
 
     override fun getVirtualFile(): VirtualFile {

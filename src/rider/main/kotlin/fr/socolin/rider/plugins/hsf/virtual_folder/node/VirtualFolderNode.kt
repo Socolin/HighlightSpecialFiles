@@ -26,7 +26,7 @@ class VirtualFolderNode(
     private val parentEntity: VirtualFolderProjectModelEntity,
     val rule: HsfHighlightingRule,
     val id: String,
-) : SolutionViewNode<String>(project, id), ClickableNode, SolutionViewEntityOwner {
+) : SolutionViewNode<String>(project, id), ClickableNode, SolutionViewEntityOwner, SolutionViewCustomEntityContainer {
 
     override val entity: ProjectModelEntity
         get() {
@@ -88,6 +88,15 @@ class VirtualFolderNode(
             }
         }
         return false
+    }
+
+    override fun contains(entity: ProjectModelEntityReference): Boolean {
+        val entityVirtualUrl = entity.getEntity(project)?.url ?: return false;
+        for (node in this.nodesToGroup) {
+            if (node.entity?.url == entityVirtualUrl)
+                return true;
+        }
+        return false;
     }
 
     override fun getBackgroundColor() = null
