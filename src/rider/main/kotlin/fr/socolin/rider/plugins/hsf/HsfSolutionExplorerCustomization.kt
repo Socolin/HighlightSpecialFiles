@@ -18,7 +18,6 @@ import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
 import fr.socolin.rider.plugins.hsf.actions.OpenPluginSettingsAction
 import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
 import fr.socolin.rider.plugins.hsf.virtual_folder.file.VirtualFolderFileNode
-import fr.socolin.rider.plugins.hsf.virtual_folder.file.VirtualFolderVirtualFile
 import fr.socolin.rider.plugins.hsf.virtual_folder.node.VirtualFolderItemDescriptor
 import fr.socolin.rider.plugins.hsf.virtual_folder.node.VirtualFolderNode
 import fr.socolin.rider.plugins.hsf.virtual_folder.node.VirtualFolderProjectModelEntity
@@ -73,9 +72,10 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
                 if (firstElement is SolutionExplorerFileNode) {
                     val virtualFolder = VirtualFolderFileNode(
                         firstElement.project,
-                        VirtualFolderVirtualFile(virtualFile, rule),
+                        firstElement.toString() + rule.id,
                         rule,
-                        filesToGroup
+                        filesToGroup,
+                        virtualFile
                     )
                     children.removeAll(filesToGroup)
                     virtualNodes.add(virtualFolder)
