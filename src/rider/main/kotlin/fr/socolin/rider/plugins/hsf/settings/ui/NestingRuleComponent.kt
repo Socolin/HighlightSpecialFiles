@@ -1,5 +1,6 @@
 package fr.socolin.rider.plugins.hsf.settings.ui
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.DialogPanel
@@ -7,7 +8,6 @@ import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.*
 import com.jetbrains.rd.util.lifetime.Lifetime
 import fr.socolin.rider.plugins.hsf.settings.models.HsfNestingRuleConfiguration
-import icons.CollaborationToolsIcons
 import icons.RiderIcons
 
 class NestingRuleComponent(
@@ -19,7 +19,7 @@ class NestingRuleComponent(
     private lateinit var patternTextField: Cell<JBTextField>
 
     init {
-        val deleteAction = object : DumbAwareAction("Delete Rule", "Delete this rule", CollaborationToolsIcons.Delete) {
+        val deleteAction = object : DumbAwareAction("Delete Rule", "Delete this rule", AllIcons.General.Delete) {
             override fun actionPerformed(e: AnActionEvent) {
                 onDelete.fire(ruleConfiguration)
             }

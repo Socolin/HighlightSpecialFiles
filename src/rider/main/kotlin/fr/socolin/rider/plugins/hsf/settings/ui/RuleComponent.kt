@@ -16,7 +16,6 @@ import fr.socolin.rider.plugins.hsf.models.HsfIconManager
 import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import fr.socolin.rider.plugins.hsf.settings.ui.renderers.ComboCellStyleRender
 import fr.socolin.rider.plugins.hsf.settings.ui.renderers.ComboCellWithIconRender
-import icons.CollaborationToolsIcons
 import icons.RiderIcons
 import java.awt.Color
 import java.util.*
@@ -32,7 +31,7 @@ class RuleComponent(
     private lateinit var patternTextField: Cell<JBTextField>
 
     init {
-        val deleteAction = object : DumbAwareAction("Delete Rule", "Delete this rule", CollaborationToolsIcons.Delete) {
+        val deleteAction = object : DumbAwareAction("Delete Rule", "Delete this rule", AllIcons.General.Delete) {
             override fun actionPerformed(e: AnActionEvent) {
                 onDelete.fire(ruleConfiguration)
             }
