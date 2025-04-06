@@ -9,7 +9,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.util.io.systemIndependentPath
 import com.jetbrains.rd.util.reactive.Signal
 import icons.RiderIcons
-import java.net.URL
+import java.net.URI
 import java.nio.file.Path
 import javax.swing.Icon
 import kotlin.io.path.*
@@ -119,7 +119,7 @@ class HsfIconManager(private val project: Project) {
     private fun loadIconFromDisk(iconFile: Path): Icon? {
         try {
             val filePathUrl = if (SystemInfo.isWindows) "file:/" + iconFile.systemIndependentPath else "file://" + iconFile.systemIndependentPath
-            return IconLoader.findIcon(URL(filePathUrl))
+            return IconLoader.findIcon(URI(filePathUrl).toURL())
         } catch (e: Exception) {
             logger.error("Failed to load project icon $iconFile", e)
         }
