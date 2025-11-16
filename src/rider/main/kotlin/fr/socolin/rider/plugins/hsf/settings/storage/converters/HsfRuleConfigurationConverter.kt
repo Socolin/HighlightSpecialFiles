@@ -32,7 +32,7 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
                     continue
                 }
 
-                val (key, value) = confArray;
+                val (key, value) = confArray
                 when (key) {
                     "ruleId" -> ruleId = UUID.fromString(value)
                     "pattern" -> pattern = URLDecoder.decode(value, Charsets.UTF_8)
@@ -51,7 +51,7 @@ open class HsfRuleConfigurationConverter(private val shared: Boolean) : Converte
             }
 
             if (ruleId == null || pattern == null)
-                continue;
+                continue
 
             rules.add(
                 HsfRuleConfiguration(

@@ -17,7 +17,7 @@ class HsfActiveNestingRuleManager(project: Project) {
 
     val rules: List<HsfNestingRule>
         get() {
-            return activeRules;
+            return activeRules
         }
 
     private val activeRules: SortedList<HsfNestingRule> = SortedList { a, b -> a.order - b.order }
@@ -58,27 +58,27 @@ class HsfActiveNestingRuleManager(project: Project) {
 
     private fun addRule(ruleConfig: HsfNestingRuleConfiguration) {
         if (ruleConfig.isDisabled)
-            return;
+            return
         val activeRule = createRuleFromConfig(ruleConfig)
         activeRules.add(activeRule)
     }
 
     private fun updateRule(previousRule: HsfNestingRuleConfiguration, newRule: HsfNestingRuleConfiguration) {
         if (previousRule.isDisabled && newRule.isDisabled)
-            return;
+            return
         if (previousRule.isDisabled) {
-            addRule(newRule);
-            return;
+            addRule(newRule)
+            return
         }
         if (newRule.isDisabled) {
-            removeRule(previousRule);
-            return;
+            removeRule(previousRule)
+            return
         }
         val activeRule = createRuleFromConfig(newRule)
         for ((index, rule) in activeRules.withIndex()) {
             if (rule.id == previousRule.id) {
                 activeRules.removeAt(index)
-                activeRules.add(activeRule);
+                activeRules.add(activeRule)
                 break
             }
         }

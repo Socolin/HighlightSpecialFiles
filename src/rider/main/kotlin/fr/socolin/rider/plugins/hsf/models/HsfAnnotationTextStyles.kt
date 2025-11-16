@@ -22,7 +22,7 @@ class HsfAnnotationTextStyles {
 
         fun getStyle(styleId: String?): SimpleTextAttributes {
             if (styleId == null)
-                return SimpleTextAttributes.GRAYED_ATTRIBUTES;
+                return SimpleTextAttributes.GRAYED_ATTRIBUTES
             return annotationsStyles.getOrDefault(styleId, SimpleTextAttributes.GRAYED_ATTRIBUTES)
         }
 

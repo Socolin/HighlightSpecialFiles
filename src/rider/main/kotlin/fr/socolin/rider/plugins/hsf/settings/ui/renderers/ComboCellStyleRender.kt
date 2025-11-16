@@ -13,9 +13,9 @@ class ComboCellStyleRender : DefaultListCellRenderer() {
         super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus)
         val name: String = value as String
         this.text = name
-        val style = HsfAnnotationTextStyles.getStyle(name);
-        foreground = style.fgColor;
-        background = style.bgColor;
+        val style = HsfAnnotationTextStyles.getStyle(name)
+        foreground = style.fgColor
+        background = style.bgColor
         font = font.deriveFont(style.style)
         return this
     }

@@ -2,9 +2,7 @@ package fr.socolin.rider.plugins.hsf.settings.ui
 
 import com.intellij.openapi.project.Project
 import com.jetbrains.rd.util.lifetime.Lifetime
-import fr.socolin.rider.plugins.hsf.models.HsfIconManager
 import fr.socolin.rider.plugins.hsf.settings.models.HsfNestingRuleConfiguration
-import fr.socolin.rider.plugins.hsf.settings.models.HsfRuleConfiguration
 import java.util.*
 
 class NestingRulesComponent(

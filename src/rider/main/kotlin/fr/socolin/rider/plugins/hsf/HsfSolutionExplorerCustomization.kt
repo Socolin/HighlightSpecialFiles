@@ -5,7 +5,6 @@ import com.intellij.ide.util.treeView.AbstractTreeNode
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.workspace.storage.impl.WorkspaceEntityBase
 import com.jetbrains.rider.model.RdDependencyFolderDescriptor
 import com.jetbrains.rider.model.RdProjectFolderDescriptor
 import com.jetbrains.rider.model.RdProjectModelItemDescriptor
@@ -58,11 +57,11 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         children: MutableList<AbstractTreeNode<*>>
     ) {
         super.modifyChildren(virtualFile, settings, children)
-        var virtualNodes: ArrayList<AbstractTreeNode<*>>? = null;
+        var virtualNodes: ArrayList<AbstractTreeNode<*>>? = null
         for (rule in hsfActiveRuleManager.rules) {
-            if (!rule.groupInVirtualFolder) continue;
+            if (!rule.groupInVirtualFolder) continue
 
-            val filesToGroup = getMatchingNodes<AbstractTreeNode<*>>(rule, children);
+            val filesToGroup = getMatchingNodes<AbstractTreeNode<*>>(rule, children)
             val fileCount = filesToGroup.count()
             if (fileCount >= rule.filesCountBeforeCreatingVirtualFolder && fileCount > 0) {
                 if (virtualNodes == null)
@@ -93,11 +92,11 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
         settings: SolutionExplorerViewSettings,
         children: MutableList<AbstractTreeNode<*>>
     ) {
-        var virtualNodes: ArrayList<AbstractTreeNode<*>>? = null;
+        var virtualNodes: ArrayList<AbstractTreeNode<*>>? = null
         for (rule in hsfActiveRuleManager.rules) {
-            if (!rule.groupInVirtualFolder) continue;
+            if (!rule.groupInVirtualFolder) continue
 
-            val filesToGroup = getMatchingNodes<SolutionExplorerModelNode>(rule, children);
+            val filesToGroup = getMatchingNodes<SolutionExplorerModelNode>(rule, children)
             val fileCount = filesToGroup.count()
             if (filesToGroup.count() >= rule.filesCountBeforeCreatingVirtualFolder && fileCount > 0) {
                 if (virtualNodes == null)
@@ -121,17 +120,17 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
     }
 
     private inline fun <reified T : AbstractTreeNode<*>> getMatchingNodes(rule: HsfHighlightingRule, nodes: MutableList<AbstractTreeNode<*>>): List<T> {
-        val filesToGroup = ArrayList<T>();
+        val filesToGroup = ArrayList<T>()
         for (node in nodes) {
-            if (node !is T) continue;
-            val name = node.name ?: continue;
+            if (node !is T) continue
+            val name = node.name ?: continue
             val match = rule.pattern.matcher(name)
             if (match.matches()) {
-                filesToGroup.add(node);
+                filesToGroup.add(node)
             }
         }
 
-        return filesToGroup;
+        return filesToGroup
     }
 
     private fun applyRule(rule: HsfHighlightingRule, presentation: PresentationData) {
@@ -173,7 +172,7 @@ class HsfSolutionExplorerCustomization(project: Project) : SolutionExplorerCusto
                     break
                 }
             }
-        return priority;
+        return priority
     }
 
     private fun isFolder(descriptor: RdProjectModelItemDescriptor) =

@@ -7,10 +7,8 @@ import com.intellij.ui.dsl.builder.AlignX
 import com.intellij.ui.dsl.builder.panel
 import com.intellij.util.containers.SortedList
 import com.jetbrains.rd.util.lifetime.Lifetime
-import fr.socolin.rider.plugins.hsf.models.HsfIconManager
 import fr.socolin.rider.plugins.hsf.settings.HsfRuleConfigurationHelper
 import fr.socolin.rider.plugins.hsf.settings.models.IHsfRuleConfiguration
-import java.util.*
 import javax.swing.JPanel
 
 abstract class RulesComponentBase<TRuleConfiguration : IHsfRuleConfiguration<TRuleConfiguration>>(
@@ -40,7 +38,7 @@ abstract class RulesComponentBase<TRuleConfiguration : IHsfRuleConfiguration<TRu
         addRule(createNewRuleConfiguration())
     }
 
-    protected abstract fun createNewRuleConfiguration(): TRuleConfiguration;
+    protected abstract fun createNewRuleConfiguration(): TRuleConfiguration
 
     fun setRules(rules: Collection<TRuleConfiguration>) {
         val diffResult = HsfRuleConfigurationHelper.computeDiffBetweenRules(getRules(), rules)

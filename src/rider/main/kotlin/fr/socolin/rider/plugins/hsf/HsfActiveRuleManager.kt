@@ -21,10 +21,10 @@ class HsfActiveRuleManager(project: Project) {
     private val rulesConfigurationManager: HsfRuleConfigurationManager = HsfRuleConfigurationManager.getInstance(project)
 
     val rules : List<HsfHighlightingRule> get() {
-        return activeRules;
+        return activeRules
     }
     val rulesWithPriority : List<HsfHighlightingRule> get() {
-        return activeRules;
+        return activeRules
     }
     private val activeRules: SortedList<HsfHighlightingRule> = SortedList { a, b -> a.order - b.order }
     private val activeRulesWithPriority: SortedList<HsfHighlightingRule> = SortedList { a, b -> a.order - b.order }
@@ -74,7 +74,7 @@ class HsfActiveRuleManager(project: Project) {
 
     private fun addRule(ruleConfig: HsfRuleConfiguration) {
         if (ruleConfig.isDisabled)
-            return;
+            return
         val activeRule = createRuleFromConfig(ruleConfig)
         activeRules.add(activeRule)
         if (activeRule.priority != null)
@@ -83,20 +83,20 @@ class HsfActiveRuleManager(project: Project) {
 
     private fun updateRule(previousRule: HsfRuleConfiguration, newRule: HsfRuleConfiguration) {
         if (previousRule.isDisabled && newRule.isDisabled)
-            return;
+            return
         if (previousRule.isDisabled) {
-            addRule(newRule);
-            return;
+            addRule(newRule)
+            return
         }
         if (newRule.isDisabled) {
-            removeRule(previousRule);
-            return;
+            removeRule(previousRule)
+            return
         }
         val activeRule = createRuleFromConfig(newRule)
         for ((index, rule) in activeRules.withIndex()) {
             if (rule.id == previousRule.id) {
                 activeRules.removeAt(index)
-                activeRules.add(activeRule);
+                activeRules.add(activeRule)
                 break
             }
         }
@@ -117,11 +117,11 @@ class HsfActiveRuleManager(project: Project) {
     }
 
     private fun isRuleModifyingFilePriority(rule: HsfRuleConfiguration): Boolean {
-        return rule.priority != null && !rule.groupInVirtualFolder;
+        return rule.priority != null && !rule.groupInVirtualFolder
     }
 
     private fun isRuleModifyingFilePriority(rule: HsfHighlightingRule): Boolean {
-        return rule.priority != null && !rule.groupInVirtualFolder;
+        return rule.priority != null && !rule.groupInVirtualFolder
     }
 
     private fun createRuleFromConfig(

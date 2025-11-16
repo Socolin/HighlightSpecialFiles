@@ -18,11 +18,11 @@ class SolutionExplorerModelNodeWithNesting(
     override fun calculateChildren(): MutableList<AbstractTreeNode<*>> {
         val children = super.calculateChildren()
         children.addAll(nestingNodes)
-        return children;
+        return children
     }
 
     override fun contains(entity: ProjectModelEntityReference): Boolean {
-        val entityVirtualUrl = entity.getEntity(project)?.url ?: return false;
+        val entityVirtualUrl = entity.getEntity(project)?.url ?: return false
         return nestingNodes.any { n -> n.getVirtualFile()?.url == entityVirtualUrl.url }
     }
 }

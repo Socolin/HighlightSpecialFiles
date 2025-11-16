@@ -22,7 +22,7 @@ open class HsfNestingRuleConfigurationConverter(private val shared: Boolean) : C
                     continue
                 }
 
-                val (key, value) = confArray;
+                val (key, value) = confArray
                 when (key) {
                     "ruleId" -> ruleId = UUID.fromString(value)
                     "pattern" -> pattern = URLDecoder.decode(value, Charsets.UTF_8)
@@ -32,7 +32,7 @@ open class HsfNestingRuleConfigurationConverter(private val shared: Boolean) : C
             }
 
             if (ruleId == null || pattern == null)
-                continue;
+                continue
 
             rules.add(
                 HsfNestingRuleConfiguration(

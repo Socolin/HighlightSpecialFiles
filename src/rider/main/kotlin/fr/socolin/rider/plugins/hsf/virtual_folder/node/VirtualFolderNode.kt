@@ -91,12 +91,12 @@ class VirtualFolderNode(
     }
 
     override fun contains(entity: ProjectModelEntityReference): Boolean {
-        val entityVirtualUrl = entity.getEntity(project)?.url ?: return false;
+        val entityVirtualUrl = entity.getEntity(project)?.url ?: return false
         for (node in this.nodesToGroup) {
             if (node.entity?.url == entityVirtualUrl)
-                return true;
+                return true
         }
-        return false;
+        return false
     }
 
     override fun getBackgroundColor() = null

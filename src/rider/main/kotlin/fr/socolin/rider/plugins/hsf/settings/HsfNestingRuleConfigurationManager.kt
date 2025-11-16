@@ -8,11 +8,11 @@ import fr.socolin.rider.plugins.hsf.settings.storage.HsfUserSettingsStorageServi
 
 @Service(Service.Level.PROJECT)
 class HsfNestingRuleConfigurationManager(project: Project) : HsfConfigurationManagerBase<HsfNestingRuleConfiguration>() {
-    private val hsfUserSettingsStorageService = HsfUserSettingsStorageService.getInstance(project);
-    private val hsfProjectSettingsStorageService = HsfProjectSettingsStorageService.getInstance(project);
+    private val hsfUserSettingsStorageService = HsfUserSettingsStorageService.getInstance(project)
+    private val hsfProjectSettingsStorageService = HsfProjectSettingsStorageService.getInstance(project)
 
     init {
-        val allRules = ArrayList<HsfNestingRuleConfiguration>();
+        val allRules = ArrayList<HsfNestingRuleConfiguration>()
         allRules.addAll(hsfUserSettingsStorageService.getNestingRulesConfigurations())
         allRules.addAll(hsfProjectSettingsStorageService.getNestingRulesConfigurations())
         init(allRules)
@@ -20,16 +20,16 @@ class HsfNestingRuleConfigurationManager(project: Project) : HsfConfigurationMan
 
     override fun removeRuleFromConfigurationStorage(rule: HsfNestingRuleConfiguration) {
         if (rule.isShared)
-            hsfProjectSettingsStorageService.removeNestingRule(rule);
+            hsfProjectSettingsStorageService.removeNestingRule(rule)
         else
-            hsfUserSettingsStorageService.removeNestingRule(rule);
+            hsfUserSettingsStorageService.removeNestingRule(rule)
     }
 
     override fun addRuleToConfigurationStorage(rule: HsfNestingRuleConfiguration) {
         if (rule.isShared)
-            hsfProjectSettingsStorageService.addNestingRule(rule);
+            hsfProjectSettingsStorageService.addNestingRule(rule)
         else
-            hsfUserSettingsStorageService.addNestingRule(rule);
+            hsfUserSettingsStorageService.addNestingRule(rule)
     }
 
     companion object {

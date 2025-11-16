@@ -29,23 +29,23 @@ class VirtualFolderFileNode(
     }
 
     override fun contains(file: VirtualFile): Boolean {
-        return filesToGroup.any { f -> f.getVirtualFile() == file };
+        return filesToGroup.any { f -> f.getVirtualFile() == file }
     }
 
     override fun contains(entity: ProjectModelEntityReference): Boolean {
-        val entityVirtualUrl = entity.getEntity(project)?.url ?: return false;
-        return filesToGroup.any { f -> f.getVirtualFile() == entityVirtualUrl };
+        val entityVirtualUrl = entity.getEntity(project)?.url ?: return false
+        return filesToGroup.any { f -> f.getVirtualFile() == entityVirtualUrl }
     }
 
     override fun getVirtualFile(): VirtualFile {
-        return this.virtualFile;
+        return this.virtualFile
     }
 
     override fun getName(): String {
-        return rule.virtualFolderName ?: "<No Virtual Folder Name>";
+        return rule.virtualFolderName ?: "<No Virtual Folder Name>"
     }
 
     override fun toString(): String {
-        return rule.virtualFolderName ?: "<No Virtual Folder Name>";
+        return rule.virtualFolderName ?: "<No Virtual Folder Name>"
     }
 }

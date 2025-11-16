@@ -23,7 +23,7 @@ abstract class RuleComponentBase<TRuleConfiguration : IHsfRuleConfiguration<TRul
     val order: Int
         get() = ruleModel.order
 
-    abstract fun getRule(): TRuleConfiguration;
+    abstract fun getRule(): TRuleConfiguration
 
     open fun setRule(updatedRule: TRuleConfiguration) {
         ruleModel.updateModel(updatedRule)

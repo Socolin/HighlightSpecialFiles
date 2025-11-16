@@ -45,12 +45,12 @@ class HsfUserSettingsStorageService(private val project: Project) :
 
     fun addNestingRule(ruleConfiguration: HsfNestingRuleConfiguration) {
         state.nestingRules.add(ruleConfiguration)
-        tracker.incModificationCount();
+        tracker.incModificationCount()
     }
 
     fun removeNestingRule(ruleConfiguration: HsfNestingRuleConfiguration) {
         state.nestingRules.removeIf { r -> r.id == ruleConfiguration.id }
-        tracker.incModificationCount();
+        tracker.incModificationCount()
     }
 
     fun getNestingRulesConfigurations(): List<HsfNestingRuleConfiguration> = state.nestingRules

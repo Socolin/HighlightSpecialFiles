@@ -10,7 +10,7 @@ import java.util.*
 abstract class HsfConfigurationManagerBase<TRuleConfiguration : IHsfRuleConfiguration<TRuleConfiguration>> {
     private val logger: Logger = Logger.getInstance(HsfConfigurationManagerBase::class.java)
 
-    fun getOrderedRules(): Collection<TRuleConfiguration> = rulesConfigurationsOrdered;
+    fun getOrderedRules(): Collection<TRuleConfiguration> = rulesConfigurationsOrdered
     private val rulesConfigurationsOrdered = SortedList<TRuleConfiguration> { a, b -> a.order - b.order }
     private val rulesByIds: HashMap<UUID, TRuleConfiguration> = HashMap()
 
@@ -32,7 +32,7 @@ abstract class HsfConfigurationManagerBase<TRuleConfiguration : IHsfRuleConfigur
     }
 
     fun updateRules(updatedRules: List<TRuleConfiguration>) {
-        val diffResult = HsfRuleConfigurationHelper.computeDiffBetweenRules(rulesConfigurationsOrdered, updatedRules);
+        val diffResult = HsfRuleConfigurationHelper.computeDiffBetweenRules(rulesConfigurationsOrdered, updatedRules)
         for (rule in diffResult.removedRules) {
             removeRule(rule)
         }

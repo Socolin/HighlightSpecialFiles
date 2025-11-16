@@ -23,13 +23,13 @@ class VirtualFolderProjectModelEntity(
         get() = VirtualFolderItemDescriptor(rule.virtualFolderName ?: "", parentModelEntity.descriptor.location)
     override val entitySource: EntitySource
         get() = VirtualEntitySource()
-    override val parentEntity: ProjectModelEntity?
+    override val parentEntity: ProjectModelEntity
         get() = parentModelEntity
     override val url: VirtualFileUrl?
         get() = null
 
     override fun <E : WorkspaceEntity> createPointer(): EntityPointer<E> {
-        return parentModelEntity.createPointer();
+        return parentModelEntity.createPointer()
     }
 
     override fun getEntityInterface(): Class<out WorkspaceEntity> {
@@ -38,6 +38,4 @@ class VirtualFolderProjectModelEntity(
 
 }
 
-class VirtualEntitySource : EntitySource {
-
-}
+class VirtualEntitySource : EntitySource

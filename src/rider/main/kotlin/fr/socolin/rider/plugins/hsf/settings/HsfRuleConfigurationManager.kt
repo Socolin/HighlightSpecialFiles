@@ -8,11 +8,11 @@ import fr.socolin.rider.plugins.hsf.settings.storage.HsfUserSettingsStorageServi
 
 @Service(Service.Level.PROJECT)
 class HsfRuleConfigurationManager(project: Project) : HsfConfigurationManagerBase<HsfRuleConfiguration>() {
-    private val hsfUserSettingsStorageService = HsfUserSettingsStorageService.getInstance(project);
-    private val hsfProjectSettingsStorageService = HsfProjectSettingsStorageService.getInstance(project);
+    private val hsfUserSettingsStorageService = HsfUserSettingsStorageService.getInstance(project)
+    private val hsfProjectSettingsStorageService = HsfProjectSettingsStorageService.getInstance(project)
 
     init {
-        val allRules = ArrayList<HsfRuleConfiguration>();
+        val allRules = ArrayList<HsfRuleConfiguration>()
         allRules.addAll(hsfProjectSettingsStorageService.getRulesConfigurations())
         allRules.addAll(hsfUserSettingsStorageService.getRulesConfigurations())
         init(allRules)
@@ -20,16 +20,16 @@ class HsfRuleConfigurationManager(project: Project) : HsfConfigurationManagerBas
 
     override fun removeRuleFromConfigurationStorage(rule: HsfRuleConfiguration) {
         if (rule.isShared)
-            hsfProjectSettingsStorageService.removeRule(rule);
+            hsfProjectSettingsStorageService.removeRule(rule)
         else
-            hsfUserSettingsStorageService.removeRule(rule);
+            hsfUserSettingsStorageService.removeRule(rule)
     }
 
     override fun addRuleToConfigurationStorage(rule: HsfRuleConfiguration) {
         if (rule.isShared)
-            hsfProjectSettingsStorageService.addRule(rule);
+            hsfProjectSettingsStorageService.addRule(rule)
         else
-            hsfUserSettingsStorageService.addRule(rule);
+            hsfUserSettingsStorageService.addRule(rule)
     }
 
     companion object {
