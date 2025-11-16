@@ -6,6 +6,7 @@ import com.intellij.platform.workspace.storage.WorkspaceEntity
 import com.intellij.platform.workspace.storage.url.VirtualFileUrl
 import com.jetbrains.rider.model.RdProjectModelItemDescriptor
 import com.jetbrains.rider.projectView.workspace.ProjectModelEntity
+import com.jetbrains.rider.projectView.workspace.ProjectModelPathBridgingEntity
 import fr.socolin.rider.plugins.hsf.models.HsfHighlightingRule
 
 class VirtualFolderProjectModelEntity(
@@ -14,6 +15,8 @@ class VirtualFolderProjectModelEntity(
 ) : ProjectModelEntity {
     override val alternativeUrls: List<VirtualFileUrl>
         get() = parentModelEntity.alternativeUrls
+    override val possibleBridge: ProjectModelPathBridgingEntity?
+        get() = parentModelEntity.possibleBridge
     override val childrenEntities: List<ProjectModelEntity>
         get() = parentModelEntity.childrenEntities
     override val descriptor: RdProjectModelItemDescriptor

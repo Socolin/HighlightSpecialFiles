@@ -36,7 +36,7 @@ namespace Rider.Plugins.PluginTemplate.Model
   
   
   /// <summary>
-  /// <p>Generated from: RdSampleModel.kt:11</p>
+  /// <p>Generated from: RdSampleModel.kt:10</p>
   /// </summary>
   public class RdSampleModel : RdExtBase
   {
